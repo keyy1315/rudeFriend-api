@@ -1,0 +1,51 @@
+spring:
+  application:
+    name: rudeFriend-api
+
+
+  datasource:
+    driver-class-name: org.mariadb.jdbc.Driver
+    url: jdbc:mariadb://localhost:3306/rudefriend
+    username: root
+    password: root
+    hikari:
+      maximum-pool-size: 5
+
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        format_sql: true
+    database-platform: org.hibernate.dialect.MariaDBDialect
+
+logging:
+  level:
+    root: INFO
+    com.lotft.nexus: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+    org.springframework.security: DEBUG
+    org.springframework.web: DEBUG
+  pattern:
+    console: "%clr(%d{yyyy-MM-dd HH:mm:ss}){faint} %clr(%5p) %clr(%logger{36}){cyan} - %msg%n"
+
+# Swagger
+springdoc:
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui/index.html
+    try-it-out-enabled: true
+  show-actuator: true
+
+
+server:
+  port: 8081
+  error:
+    include-message: always
+    include-binding-errors: always
+    include-stacktrace: on_param
+    include-exception: true

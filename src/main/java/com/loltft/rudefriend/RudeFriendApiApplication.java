@@ -9,5 +9,4 @@ public class RudeFriendApiApplication {
   public static void main(String[] args) {
     SpringApplication.run(RudeFriendApiApplication.class, args);
   }
-
 }

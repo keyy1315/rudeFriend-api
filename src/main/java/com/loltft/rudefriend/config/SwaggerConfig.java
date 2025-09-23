@@ -43,9 +43,8 @@ public class SwaggerConfig {
   }
 
   private List<Server> getServers() {
-    return List.of(
-        new Server().url("http://localhost:8081").description("Local Server"));
-//        new Server().url("http://localhost:8080").description("Production Server"));
+    return List.of(new Server().url("http://localhost:8081").description("Local Server"));
+    //        new Server().url("http://localhost:8080").description("Production Server"));
   }
 
   @Bean
@@ -57,4 +56,3 @@ public class SwaggerConfig {
         .build();
   }
 }
-

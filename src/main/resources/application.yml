@@ -1,15 +1,17 @@
 spring:
   application:
     name: rudeFriend-api
+  config:
+    import: "optional:file:env[.properties]"
 
 
   datasource:
     driver-class-name: org.mariadb.jdbc.Driver
-    url: jdbc:mariadb://localhost:3306/rudefriend
-    username: root
-    password: root
+    url: ${DATABASE_URL:jdbc:mariadb://localhost:3306/rudefriend}
+    username: ${DATABASE_USERNAME:root}
+    password: ${DATABASE_PASSWORD}
     hikari:
-      maximum-pool-size: 5
+      maximum-pool-size: ${DB_POOL_SIZE:5}
 
   flyway:
     enabled: true
@@ -41,6 +43,10 @@ springdoc:
     try-it-out-enabled: true
   show-actuator: true
 
+
+jwt:
+  secret: ${JWT_SECRET}
+  hash-secret: ${JWT_HASH_SECRET}
 
 server:
   port: 8081

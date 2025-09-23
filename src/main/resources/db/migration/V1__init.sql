@@ -51,6 +51,15 @@ CREATE TABLE member
     CONSTRAINT pk_member PRIMARY KEY (id)
 );
 
+CREATE TABLE save_file
+(
+    file_uuid          VARCHAR(255) NOT NULL,
+    original_file_name VARCHAR(255) NULL,
+    upload_date_time   datetime     NULL,
+    uploader_id        BINARY(16)   NOT NULL,
+    CONSTRAINT pk_save_file PRIMARY KEY (file_uuid)
+);
+
 CREATE TABLE tft_match
 (
     id           BINARY(16)   NOT NULL,
@@ -89,6 +98,9 @@ ALTER TABLE member
 
 ALTER TABLE member
     ADD CONSTRAINT FK_MEMBER_ON_UPDATEDBY FOREIGN KEY (updated_by_id) REFERENCES member (id);
+
+ALTER TABLE save_file
+    ADD CONSTRAINT FK_SAVE_FILE_ON_UPLOADER FOREIGN KEY (uploader_id) REFERENCES member (id);
 
 ALTER TABLE vote
     ADD CONSTRAINT FK_VOTE_ON_BOARD FOREIGN KEY (board_id) REFERENCES board (id);

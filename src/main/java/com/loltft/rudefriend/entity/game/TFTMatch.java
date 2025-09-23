@@ -1,6 +1,5 @@
 package com.loltft.rudefriend.entity.game;
 
-
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

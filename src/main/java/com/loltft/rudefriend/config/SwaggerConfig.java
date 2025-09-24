@@ -36,10 +36,10 @@ public class SwaggerConfig {
 
   private Info getApiInfo() {
     return new Info()
-        .title("Nexus API")
+        .title("Rude Friend API")
         .description("Nexus REST API 문서")
         .version("1.0.0")
-        .contact(new Contact().name("Interplug").email("contact@interplug.com"));
+        .contact(new Contact().name("keyy1315").email("lovelina1315@gmail.com"));
   }
 
   private List<Server> getServers() {
@@ -52,7 +52,7 @@ public class SwaggerConfig {
     return GroupedOpenApi.builder()
         .group("public-api")
         .pathsToMatch("/**")
-        .packagesToScan("com.lotft.nexus")
+        .packagesToScan("com.loltft.rudefriend")
         .build();
   }
 }

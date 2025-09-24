@@ -1,6 +1,7 @@
 package com.loltft.rudefriend.jwt_security;
 
 import com.loltft.rudefriend.config.JwtProperties;
+import com.loltft.rudefriend.service.MemberService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
@@ -9,6 +10,7 @@ import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
@@ -30,6 +32,7 @@ public class JwtTokenProvider {
   private static final String AUTHORIZATION = "Authorization";
 
   private final JwtProperties jwtProperties;
+  private final MemberService memberService;
 
   private SecretKey getSigningKey() {
     byte[] keyBytes = jwtProperties.getSecret().getBytes(StandardCharsets.UTF_8);
@@ -83,7 +86,7 @@ public class JwtTokenProvider {
    */
   public String generateRefreshToken() {
     Date now = new Date();
-    Date expireDate = new Date(now.getTime() + jwtProperties.getExpiration());
+    Date expireDate = new Date(now.getTime() + jwtProperties.getRefreshExpiration());
 
     return Jwts.builder()
         .subject(jwtProperties.getRefreshTokenSubject())
@@ -98,7 +101,7 @@ public class JwtTokenProvider {
    * @return 토큰에서 추출한 관리자 ID
    * @throws AuthenticationCredentialsNotFoundException args에 토큰이 빈 값일 때
    */
-  public String getUsernameFromToken(String token) {
+  public String getUsernameFromAccessToken(String token) {
     if (!StringUtils.hasText(token)) {
       throw new AuthenticationCredentialsNotFoundException("토큰 정보가 없습니다.");
     }
@@ -133,7 +136,7 @@ public class JwtTokenProvider {
    * @param request HttpServletRequest
    * @return token
    */
-  public String getJwtFromRequest(HttpServletRequest request) {
+  public String getAccessTokenFromRequest(HttpServletRequest request) {
     String bearerToken = request.getHeader(AUTHORIZATION);
     if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER)) {
       return bearerToken.substring(BEARER.length());
@@ -151,8 +154,38 @@ public class JwtTokenProvider {
     try {
       Jwts.parser().verifyWith(getSigningKey()).build().parseSignedClaims(token);
       return true;
+    } catch (JwtException e) {
+      throw e;
     } catch (Exception e) {
-      throw new JwtException(handleJwtExceptionMessage(e));
+      throw new IllegalStateException("JWT 파싱 오류");
     }
+  }
+
+  /**
+   * 요청 쿠키에서 refreshToken 값을 추출
+   *
+   * @param request 요청
+   * @return refreshToken
+   */
+  public String getRefreshTokenFromCookie(HttpServletRequest request) {
+    if (request.getCookies() == null) {
+      return null;
+    }
+    for (Cookie cookie : request.getCookies()) {
+      if (jwtProperties.getRefreshCookieKey().equals(cookie.getName())) {
+        return cookie.getValue();
+      }
+    }
+    return null;
+  }
+
+  /**
+   * RefreshToken 으로 회원 ID를 추출
+   *
+   * @param hashedRefreshToken 해싱 된 refreshToken
+   * @return 회원 ID
+   */
+  public String getMemberIdFromRefreshToken(String hashedRefreshToken) {
+    return memberService.findByRefreshToken(hashedRefreshToken).getMemberId();
   }
 }

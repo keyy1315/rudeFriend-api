@@ -15,7 +15,7 @@ public class JwtProperties {
   private String hashSecret;
 
   private final long expiration = 86400000; // 24H
-  private final long refreshExpiration = 86400000 * 2; // 48H
+  private final long refreshExpiration = 86400000 * 7; // 7Day
 
   private final String accessTokenSubject = "access_token";
   private final String refreshTokenSubject = "refresh_token";
@@ -23,5 +23,5 @@ public class JwtProperties {
   private final String claimKey = "memberId";
 
   private final String accessHeaderName = "AccessToken";
-  private final String refreshHeaderName = "RefreshToken";
+  private final String refreshCookieKey = "RefreshToken";
 }

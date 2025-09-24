@@ -8,4 +8,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface MemberRepository extends JpaRepository<Member, UUID> {
 
   Optional<Member> findByMemberId(String memberId);
+
+  Optional<Member> findByRefreshToken(String refreshToken);
 }

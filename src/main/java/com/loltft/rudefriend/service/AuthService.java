@@ -1,8 +1,8 @@
 package com.loltft.rudefriend.service;
 
 import com.loltft.rudefriend.config.JwtProperties;
-import com.loltft.rudefriend.dto.auth.LoginRequest;
-import com.loltft.rudefriend.dto.auth.LoginResponse;
+import com.loltft.rudefriend.dto.member.LoginRequest;
+import com.loltft.rudefriend.dto.member.MemberResponse;
 import com.loltft.rudefriend.entity.Member;
 import com.loltft.rudefriend.jwt_security.JwtTokenProvider;
 import com.loltft.rudefriend.jwt_security.TokenHashUtil;
@@ -10,6 +10,7 @@ import com.loltft.rudefriend.repository.MemberRepository;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -17,6 +18,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 @Service
 @RequiredArgsConstructor
@@ -39,7 +41,8 @@ public class AuthService {
    * @return 로그인 한 회원의 정보 LoginResponse
    */
   @Transactional
-  public LoginResponse authenticateMember(LoginRequest loginRequest, HttpServletResponse response) {
+  public MemberResponse authenticateMember(
+      LoginRequest loginRequest, HttpServletResponse response) {
     Authentication authentication =
         authenticationManager.authenticate(
             new UsernamePasswordAuthenticationToken(
@@ -59,7 +62,7 @@ public class AuthService {
             .orElseThrow(() -> new UsernameNotFoundException(loginRequest.getMemberId()));
     member.updateRefreshToken(hashedRefreshToken);
 
-    return LoginResponse.from(member);
+    return MemberResponse.from(member);
   }
 
   /**
@@ -88,5 +91,24 @@ public class AuthService {
     } catch (Exception e) {
       throw new IllegalStateException("토큰 응답 중 오류가 발생하였습니다.");
     }
+  }
+
+  @Transactional
+  public void logout(String memberId, HttpServletResponse response) {
+    if (!StringUtils.hasText(memberId)) {
+      throw new AccessDeniedException("로그인 정보가 없습니다.");
+    }
+    Member member =
+        memberRepository
+            .findByMemberId(memberId)
+            .orElseThrow(() -> new UsernameNotFoundException(memberId));
+
+    member.updateRefreshToken(null);
+
+    Cookie cookie = new Cookie(jwtProperties.getRefreshCookieKey(), null);
+    cookie.setHttpOnly(true);
+    cookie.setPath("/");
+    cookie.setMaxAge(0);
+    response.addCookie(cookie);
   }
 }

@@ -5,6 +5,7 @@ import io.jsonwebtoken.JwtException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.core.AuthenticationException;
@@ -36,9 +37,9 @@ public class GlobalExceptionHandler {
   @ExceptionHandler(UsernameNotFoundException.class)
   public ResponseEntity<ApiCommonResponse<String>> handleUsernameNotFoundException(
       UsernameNotFoundException e) {
-    log.error("UsernameNotFoundException 오류 status - 404 : {}", e.getMessage(), e);
+    log.error("UsernameNotFoundException 오류 status - 404 ID : {}", e.getMessage(), e);
     return ResponseEntity.status(HttpStatus.NOT_FOUND)
-        .body(ApiCommonResponse.failure("회원 정보를 찾을 수 없습니다"));
+        .body(ApiCommonResponse.failure("회원 정보를 찾을 수 없습니다 ID : " + e.getMessage()));
   }
 
   @ExceptionHandler(JwtException.class)
@@ -60,5 +61,13 @@ public class GlobalExceptionHandler {
     }
     return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
         .body(ApiCommonResponse.failure(errorMessage));
+  }
+
+  @ExceptionHandler(AccessDeniedException.class)
+  public ResponseEntity<ApiCommonResponse<Object>> handleAccessDeniedException(
+      AccessDeniedException e) {
+    log.error("AccessDeniedException 오류 status - 401 : {}", e.getMessage(), e);
+    return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+        .body(ApiCommonResponse.failure(e.getMessage()));
   }
 }

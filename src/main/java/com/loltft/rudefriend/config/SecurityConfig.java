@@ -3,6 +3,7 @@ package com.loltft.rudefriend.config;
 import com.loltft.rudefriend.jwt_security.CustomAccessDeniedHandler;
 import com.loltft.rudefriend.jwt_security.JwtAuthenticationEntryPoint;
 import com.loltft.rudefriend.jwt_security.JwtAuthenticationFilter;
+import com.loltft.rudefriend.jwt_security.RefreshTokenFilter;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -66,7 +67,7 @@ public class SecurityConfig {
     configuration.setAllowCredentials(false);
 
     configuration.setExposedHeaders(
-        List.of(jwtProperties.getAccessHeaderName(), jwtProperties.getRefreshHeaderName()));
+        List.of(jwtProperties.getAccessHeaderName(), jwtProperties.getRefreshCookieKey()));
 
     UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
     source.registerCorsConfiguration("/**", configuration);
@@ -74,7 +75,8 @@ public class SecurityConfig {
   }
 
   @Bean
-  public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+  public SecurityFilterChain securityFilterChain(
+      HttpSecurity http, RefreshTokenFilter refreshTokenFilter) throws Exception {
     http.formLogin(AbstractHttpConfigurer::disable)
         .cors(cors -> cors.configurationSource(corsConfigurationSource()))
         .csrf(AbstractHttpConfigurer::disable)
@@ -86,7 +88,7 @@ public class SecurityConfig {
                     .permitAll()
                     .requestMatchers("/api/login")
                     .permitAll()
-                    .requestMatchers("/swagger-ui/**", "/v3/api-docs/**")
+                    .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html")
                     .permitAll()
                     .anyRequest()
                     .authenticated())
@@ -95,7 +97,8 @@ public class SecurityConfig {
             e ->
                 e.authenticationEntryPoint(jwtAuthenticationEntryPoint)
                     .accessDeniedHandler(customAccessDeniedHandler))
-        .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+        .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+        .addFilterBefore(refreshTokenFilter, JwtAuthenticationFilter.class);
 
     return http.build();
   }

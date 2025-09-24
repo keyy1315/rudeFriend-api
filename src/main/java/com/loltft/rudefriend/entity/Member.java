@@ -57,7 +57,15 @@ public class Member extends BaseEntity {
   @Schema(description = "닉네임")
   private String name;
 
+  @Column
+  @Schema(description = "Refresh 토큰 정보")
+  private String refreshToken;
+
   @Schema(description = "게임 계정 정보")
   @OneToOne(fetch = FetchType.LAZY)
   private GameAccountInfo gameAccountInfo;
+
+  public void updateRefreshToken(String hashedRefreshToken) {
+    this.refreshToken = hashedRefreshToken;
+  }
 }

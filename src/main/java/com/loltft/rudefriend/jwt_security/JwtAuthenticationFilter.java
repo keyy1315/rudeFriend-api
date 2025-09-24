@@ -41,12 +41,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
       HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
       throws ServletException, IOException {
     try {
-      String token = tokenProvider.getJwtFromRequest(request);
+      String token = tokenProvider.getAccessTokenFromRequest(request);
 
       if (StringUtils.hasText(token)
           && tokenProvider.getTokenSubject(token).equals(jwtProperties.getAccessTokenSubject())) {
         if (tokenProvider.validateToken(token)) {
-          String username = tokenProvider.getUsernameFromToken(token);
+          String username = tokenProvider.getUsernameFromAccessToken(token);
 
           UserDetails userDetails = customUserDetailService.loadUserByUsername(username);
 
@@ -79,15 +79,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
   /**
    * 토큰 검증 오류 메세지를 클라이언트에 직접 반환하기 위한 메소드
    *
-   * @param e
-   * @param response
-   * @throws IOException
+   * @param e 발생한 에러
+   * @param response 응답
+   * @throws IOException 응답 메세지 전달 오류 발생 시
    */
   private void handleJwtException(JwtException e, HttpServletResponse response) throws IOException {
+    String errorMessage = tokenProvider.handleJwtExceptionMessage(e);
+
     response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
     response.setContentType("application/json;charset=UTF-8");
     response
         .getWriter()
-        .write(objectMapper.writeValueAsString(ApiCommonResponse.failure(e.getMessage())));
+        .write(objectMapper.writeValueAsString(ApiCommonResponse.failure(errorMessage)));
   }
 }

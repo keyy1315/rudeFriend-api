@@ -2,6 +2,7 @@ package com.loltft.rudefriend.jwt_security;
 
 import com.loltft.rudefriend.service.AuthService;
 import com.loltft.rudefriend.service.CustomUserDetailService;
+import com.loltft.rudefriend.service.MemberService;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -24,6 +25,7 @@ public class RefreshTokenFilter extends OncePerRequestFilter {
   private final CustomUserDetailService customUserDetailService;
   private final AuthService authService;
   private final TokenHashUtil tokenHashUtil;
+  private final MemberService memberService;
 
   @Override
   protected void doFilterInternal(
@@ -40,7 +42,7 @@ public class RefreshTokenFilter extends OncePerRequestFilter {
 
       if (refreshToken != null && tokenProvider.validateToken(refreshToken)) {
         String memberId =
-            tokenProvider.getMemberIdFromRefreshToken(tokenHashUtil.hashToken(refreshToken));
+            memberService.findByRefreshToken(tokenHashUtil.hashToken(refreshToken)).getMemberId();
 
         UserDetails userDetails = customUserDetailService.loadUserByUsername(memberId);
 

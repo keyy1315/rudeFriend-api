@@ -1,7 +1,6 @@
 package com.loltft.rudefriend.jwt_security;
 
 import com.loltft.rudefriend.config.JwtProperties;
-import com.loltft.rudefriend.service.MemberService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
@@ -32,7 +31,6 @@ public class JwtTokenProvider {
   private static final String AUTHORIZATION = "Authorization";
 
   private final JwtProperties jwtProperties;
-  private final MemberService memberService;
 
   private SecretKey getSigningKey() {
     byte[] keyBytes = jwtProperties.getSecret().getBytes(StandardCharsets.UTF_8);
@@ -177,15 +175,5 @@ public class JwtTokenProvider {
       }
     }
     return null;
-  }
-
-  /**
-   * RefreshToken 으로 회원 ID를 추출
-   *
-   * @param hashedRefreshToken 해싱 된 refreshToken
-   * @return 회원 ID
-   */
-  public String getMemberIdFromRefreshToken(String hashedRefreshToken) {
-    return memberService.findByRefreshToken(hashedRefreshToken).getMemberId();
   }
 }

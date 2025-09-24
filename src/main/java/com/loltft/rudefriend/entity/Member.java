@@ -1,6 +1,7 @@
 package com.loltft.rudefriend.entity;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.loltft.rudefriend.dto.member.MemberRequest;
 import com.loltft.rudefriend.entity.enums.Role;
 import com.loltft.rudefriend.entity.game.GameAccountInfo;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -64,6 +65,19 @@ public class Member extends BaseEntity {
   @Schema(description = "게임 계정 정보")
   @OneToOne(fetch = FetchType.LAZY)
   private GameAccountInfo gameAccountInfo;
+
+  public static Member fromRequest(
+      MemberRequest memberRequest, String encodedPassword, GameAccountInfo gameAccountInfo) {
+    return Member.builder()
+        .id(UUID.randomUUID())
+        .memberId(memberRequest.getMemberId())
+        .password(encodedPassword)
+        .name(memberRequest.getName())
+        .status(true)
+        .role(Role.USER)
+        .gameAccountInfo(gameAccountInfo)
+        .build();
+  }
 
   public void updateRefreshToken(String hashedRefreshToken) {
     this.refreshToken = hashedRefreshToken;

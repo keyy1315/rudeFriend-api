@@ -1,5 +1,6 @@
 package com.loltft.rudefriend.entity.game;
 
+import com.loltft.rudefriend.dto.game.GameInfoRequest;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -54,4 +55,17 @@ public class GameAccountInfo {
   @Column
   @Schema(description = "깐부 티어", example = "MASTER I")
   private String doubleUpTier;
+
+  public static GameAccountInfo fromRequest(GameInfoRequest gameInfo) {
+    return GameAccountInfo.builder()
+        .id(gameInfo.getGameAccountId())
+        .gameName(gameInfo.getGameName())
+        .tagLine(gameInfo.getTagLine())
+        .iconUrl(gameInfo.getIconUrl())
+        .lolTier(gameInfo.getLolTier())
+        .flexTier(gameInfo.getFlexTier())
+        .tftTier(gameInfo.getTftTier())
+        .doubleUpTier(gameInfo.getDoubleUpTier())
+        .build();
+  }
 }

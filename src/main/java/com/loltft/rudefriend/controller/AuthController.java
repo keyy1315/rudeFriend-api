@@ -51,12 +51,4 @@ public class AuthController {
     authService.logout(userDetails.getUsername(), response);
     return ResponseEntity.ok(ApiCommonResponse.success("로그아웃 성공"));
   }
-
-  @GetMapping
-  public ResponseEntity<ApiCommonResponse<String>> test(
-      @AuthenticationPrincipal UserDetails userDetails) {
-    String memberId = userDetails.getUsername();
-
-    return ResponseEntity.ok(ApiCommonResponse.success(memberId));
-  }
 }

@@ -1,4 +1,4 @@
-package com.loltft.rudefriend.dto.auth;
+package com.loltft.rudefriend.dto.member;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;

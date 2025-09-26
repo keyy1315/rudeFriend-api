@@ -2,7 +2,7 @@ package com.loltft.rudefriend.config;
 
 import com.loltft.rudefriend.entity.Member;
 import com.loltft.rudefriend.entity.enums.Role;
-import com.loltft.rudefriend.repository.MemberRepository;
+import com.loltft.rudefriend.repository.member.MemberRepository;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

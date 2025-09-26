@@ -1,7 +1,7 @@
 package com.loltft.rudefriend.service;
 
 import com.loltft.rudefriend.entity.Member;
-import com.loltft.rudefriend.repository.MemberRepository;
+import com.loltft.rudefriend.repository.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;

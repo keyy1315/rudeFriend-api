@@ -6,7 +6,7 @@ import com.loltft.rudefriend.dto.member.MemberResponse;
 import com.loltft.rudefriend.entity.Member;
 import com.loltft.rudefriend.jwt_security.JwtTokenProvider;
 import com.loltft.rudefriend.jwt_security.TokenHashUtil;
-import com.loltft.rudefriend.repository.MemberRepository;
+import com.loltft.rudefriend.repository.member.MemberRepository;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;

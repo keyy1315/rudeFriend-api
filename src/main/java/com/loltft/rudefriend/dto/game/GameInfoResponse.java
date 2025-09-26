@@ -1,13 +1,18 @@
 package com.loltft.rudefriend.dto.game;
 
+import com.loltft.rudefriend.entity.enums.Tier;
 import com.loltft.rudefriend.entity.game.GameAccountInfo;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
+@Setter
+@NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Schema(description = "게임 정보 응답 객체")
@@ -26,16 +31,16 @@ public class GameInfoResponse {
   private String iconUrl;
 
   @Schema(description = "롤 솔랭 티어")
-  private String lolTier;
+  private Tier lolTier;
 
   @Schema(description = "롤 자랭 티어")
-  private String flexTier;
+  private Tier flexTier;
 
   @Schema(description = "롤체 솔랭 티어")
-  private String tftTier;
+  private Tier tftTier;
 
   @Schema(description = "롤체 깐부 티어")
-  private String doubleUpTier;
+  private Tier doubleUpTier;
 
   public static GameInfoResponse from(GameAccountInfo gameAccountInfo) {
     return GameInfoResponse.builder()

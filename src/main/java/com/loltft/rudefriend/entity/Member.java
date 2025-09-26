@@ -82,4 +82,16 @@ public class Member extends BaseEntity {
   public void updateRefreshToken(String hashedRefreshToken) {
     this.refreshToken = hashedRefreshToken;
   }
+
+  public void updateMember(
+      MemberRequest memberRequest, String encodedPassword, GameAccountInfo gameAccountInfo) {
+    this.memberId = memberRequest.getMemberId();
+    this.password = encodedPassword;
+    this.name = memberRequest.getName();
+    this.gameAccountInfo = gameAccountInfo;
+  }
+
+  public void updateStatus() {
+    this.status = !this.status;
+  }
 }

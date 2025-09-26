@@ -1,6 +1,7 @@
 package com.loltft.rudefriend.dto.game;
 
 import com.loltft.rudefriend.dto.Validation;
+import com.loltft.rudefriend.entity.enums.Tier;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import java.util.UUID;
@@ -39,14 +40,14 @@ public class GameInfoRequest {
   private String iconUrl;
 
   @Schema(description = "롤 솔랭 티어")
-  private String lolTier;
+  private Tier lolTier;
 
   @Schema(description = "롤 자랭 티어")
-  private String flexTier;
+  private Tier flexTier;
 
   @Schema(description = "롤체 솔랭 티어")
-  private String tftTier;
+  private Tier tftTier;
 
   @Schema(description = "롤체 깐부 티어")
-  private String doubleUpTier;
+  private Tier doubleUpTier;
 }

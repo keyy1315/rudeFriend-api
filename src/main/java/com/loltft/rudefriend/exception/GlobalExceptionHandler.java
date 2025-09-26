@@ -2,6 +2,7 @@ package com.loltft.rudefriend.exception;
 
 import com.loltft.rudefriend.dto.ApiCommonResponse;
 import io.jsonwebtoken.JwtException;
+import java.util.NoSuchElementException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,6 +33,14 @@ public class GlobalExceptionHandler {
         .body(ApiCommonResponse.failure(e.getMessage()));
   }
 
+  @ExceptionHandler(NoSuchElementException.class)
+  public ResponseEntity<ApiCommonResponse<String>> handleNoSuchElementException(
+      NoSuchElementException e) {
+    log.error("NoSuchElementException 오류 status - 500 : {}", e.getMessage(), e);
+    return ResponseEntity.status(HttpStatus.NOT_FOUND)
+        .body(ApiCommonResponse.failure(e.getMessage()));
+  }
+
   /// ============================ 인증 인가 에러 ============================
 
   @ExceptionHandler(UsernameNotFoundException.class)
@@ -52,7 +61,7 @@ public class GlobalExceptionHandler {
   @ExceptionHandler(AuthenticationException.class)
   public ResponseEntity<ApiCommonResponse<Object>> handleAuthenticationException(
       AuthenticationException e) {
-    log.error("AuthenticationException 오류 status - 401 : {}", e.getMessage());
+    log.error("AuthenticationException 하위 오류 status - 401 : {}", e.getMessage(), e);
     String errorMessage;
     switch (e) {
       case BadCredentialsException ignored -> errorMessage = "아이디 또는 비밀번호가 틀렸습니다.";
@@ -67,7 +76,7 @@ public class GlobalExceptionHandler {
   public ResponseEntity<ApiCommonResponse<Object>> handleAccessDeniedException(
       AccessDeniedException e) {
     log.error("AccessDeniedException 오류 status - 401 : {}", e.getMessage(), e);
-    return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+    return ResponseEntity.status(HttpStatus.FORBIDDEN)
         .body(ApiCommonResponse.failure(e.getMessage()));
   }
 }

@@ -9,7 +9,6 @@ import jakarta.persistence.Lob;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.sql.Types;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
@@ -41,5 +40,5 @@ public class Board extends BaseEntity {
   private String content;
 
   @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
-  private Set<Vote> votes = new HashSet<>();
+  private Set<Vote> votes;
 }

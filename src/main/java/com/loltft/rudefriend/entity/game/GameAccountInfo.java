@@ -1,9 +1,12 @@
 package com.loltft.rudefriend.entity.game;
 
 import com.loltft.rudefriend.dto.game.GameInfoRequest;
+import com.loltft.rudefriend.entity.enums.Tier;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.sql.Types;
@@ -40,21 +43,25 @@ public class GameAccountInfo {
   @Schema(description = "아이콘 이미지 URL")
   private String iconUrl;
 
+  @Enumerated(EnumType.STRING)
   @Column
   @Schema(description = "롤 티어", example = "PLATINUM IV")
-  private String lolTier;
+  private Tier lolTier;
 
+  @Enumerated(EnumType.STRING)
   @Column
   @Schema(description = "자랭 티어", example = "PLATINUM IV")
-  private String flexTier;
+  private Tier flexTier;
 
+  @Enumerated(EnumType.STRING)
   @Column
   @Schema(description = "롤체 티어", example = "MASTER I")
-  private String tftTier;
+  private Tier tftTier;
 
+  @Enumerated(EnumType.STRING)
   @Column
   @Schema(description = "깐부 티어", example = "MASTER I")
-  private String doubleUpTier;
+  private Tier doubleUpTier;
 
   public static GameAccountInfo fromRequest(GameInfoRequest gameInfo) {
     return GameAccountInfo.builder()

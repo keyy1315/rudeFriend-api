@@ -102,48 +102,49 @@ public class MemberRepositoryCustomImpl implements MemberRepositoryCustom {
       LocalDateTime localDateTime1,
       DateOption dateOption,
       Integer pageNo) {
-//    return setSearchFilter(
-//        search, option, tier, status, role, localDateTime, localDateTime1, dateOption)
-//        .orderBy(QMember.member.createdAt.desc())
-//        .offset((pageNo - 1L) * PAGE_SIZE)
-//        .limit(PAGE_SIZE)
-//        .fetch();
+    //    return setSearchFilter(
+    //        search, option, tier, status, role, localDateTime, localDateTime1, dateOption)
+    //        .orderBy(QMember.member.createdAt.desc())
+    //        .offset((pageNo - 1L) * PAGE_SIZE)
+    //        .limit(PAGE_SIZE)
+    //        .fetch();
 
     QMember member = QMember.member;
     QGameAccountInfo gameInfo = QGameAccountInfo.gameAccountInfo;
 
     // transform()으로 중첩 DTO 생성
-    Map<UUID, MemberResponse> resultMap = setSearchFilter(
-        search, option, tier, status, role, localDateTime, localDateTime1, dateOption)
-        .orderBy(member.createdAt.desc())
-        .offset((pageNo - 1L) * PAGE_SIZE)
-        .limit(PAGE_SIZE)
-        .transform(GroupBy.groupBy(member.id).as(
-            Projections.constructor(MemberResponse.class,
-                member.id,
-                member.memberId,
-                member.name,
-                member.status,
-                member.role,
-                member.createdAt,
-                member.updatedAt,
-                Projections.constructor(GameInfoResponse.class,
-                    gameInfo.id,
-                    gameInfo.gameName,
-                    gameInfo.tagLine,
-                    gameInfo.iconUrl,
-                    gameInfo.lolTier,
-                    gameInfo.flexTier,
-                    gameInfo.tftTier,
-                    gameInfo.doubleUpTier
-                )
-            )
-        ));
+    Map<UUID, MemberResponse> resultMap =
+        setSearchFilter(
+                search, option, tier, status, role, localDateTime, localDateTime1, dateOption)
+            .orderBy(member.createdAt.desc())
+            .offset((pageNo - 1L) * PAGE_SIZE)
+            .limit(PAGE_SIZE)
+            .transform(
+                GroupBy.groupBy(member.id)
+                    .as(
+                        Projections.constructor(
+                            MemberResponse.class,
+                            member.id,
+                            member.memberId,
+                            member.name,
+                            member.status,
+                            member.role,
+                            member.createdAt,
+                            member.updatedAt,
+                            Projections.constructor(
+                                GameInfoResponse.class,
+                                gameInfo.id,
+                                gameInfo.gameName,
+                                gameInfo.tagLine,
+                                gameInfo.iconUrl,
+                                gameInfo.lolTier,
+                                gameInfo.flexTier,
+                                gameInfo.tftTier,
+                                gameInfo.doubleUpTier))));
 
     // Map -> List 변환
     return new ArrayList<>(resultMap.values());
   }
-
 
   @Override
   public Long countAllByOption(
@@ -156,7 +157,7 @@ public class MemberRepositoryCustomImpl implements MemberRepositoryCustom {
       LocalDateTime localDateTime1,
       DateOption dateOption) {
     return setSearchFilter(
-        search, option, tier, status, role, localDateTime, localDateTime1, dateOption)
+            search, option, tier, status, role, localDateTime, localDateTime1, dateOption)
         .select(QMember.member.id.count())
         .fetchOne();
   }

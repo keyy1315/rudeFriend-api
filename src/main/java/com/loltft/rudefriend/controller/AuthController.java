@@ -37,7 +37,7 @@ public class AuthController {
   public ResponseEntity<ApiCommonResponse<MemberResponse>> login(
       @RequestBody @Validated LoginRequest loginRequest, HttpServletResponse response) {
     MemberResponse result = authService.authenticateMember(loginRequest, response);
-    return ResponseEntity.ok(ApiCommonResponse.success("로그인 성공", result));
+    return ResponseEntity.ok(ApiCommonResponse.ok("로그인 성공", result));
   }
 
   @Operation(summary = "로그아웃", description = "쿠키와 DB에 저장 된 RefreshToken을 삭제합니다.")
@@ -48,6 +48,6 @@ public class AuthController {
       throw new AccessDeniedException("로그인 정보가 없습니다.");
     }
     authService.logout(userDetails.getUsername(), response);
-    return ResponseEntity.ok(ApiCommonResponse.success("로그아웃 성공"));
+    return ResponseEntity.ok(ApiCommonResponse.ok("로그아웃 성공"));
   }
 }

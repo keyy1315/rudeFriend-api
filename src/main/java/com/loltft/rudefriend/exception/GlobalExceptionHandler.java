@@ -22,7 +22,7 @@ public class GlobalExceptionHandler {
   public ResponseEntity<ApiCommonResponse<String>> handleException(Exception e) {
     log.error("Exception 오류 status - 500 : {}", e.getMessage(), e);
     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-        .body(ApiCommonResponse.failure("서버 내부 오류가 발생했습니다."));
+        .body(ApiCommonResponse.fail("서버 내부 오류가 발생했습니다."));
   }
 
   @ExceptionHandler(IllegalStateException.class)
@@ -30,15 +30,14 @@ public class GlobalExceptionHandler {
       IllegalStateException e) {
     log.error("IllegalStateException 오류 status - 500 : {}", e.getMessage(), e);
     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-        .body(ApiCommonResponse.failure(e.getMessage()));
+        .body(ApiCommonResponse.fail(e.getMessage()));
   }
 
   @ExceptionHandler(NoSuchElementException.class)
   public ResponseEntity<ApiCommonResponse<String>> handleNoSuchElementException(
       NoSuchElementException e) {
     log.error("NoSuchElementException 오류 status - 500 : {}", e.getMessage(), e);
-    return ResponseEntity.status(HttpStatus.NOT_FOUND)
-        .body(ApiCommonResponse.failure(e.getMessage()));
+    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ApiCommonResponse.fail(e.getMessage()));
   }
 
   /// ============================ 인증 인가 에러 ============================
@@ -48,14 +47,14 @@ public class GlobalExceptionHandler {
       UsernameNotFoundException e) {
     log.error("UsernameNotFoundException 오류 status - 404 ID : {}", e.getMessage(), e);
     return ResponseEntity.status(HttpStatus.NOT_FOUND)
-        .body(ApiCommonResponse.failure("회원 정보를 찾을 수 없습니다 ID : " + e.getMessage()));
+        .body(ApiCommonResponse.fail("회원 정보를 찾을 수 없습니다 ID : " + e.getMessage()));
   }
 
   @ExceptionHandler(JwtException.class)
   public ResponseEntity<ApiCommonResponse<String>> handleJwtException(JwtException e) {
     log.error("JwtException 오류 status - 401 : {}", e.getMessage(), e);
     return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-        .body(ApiCommonResponse.failure(e.getMessage()));
+        .body(ApiCommonResponse.fail(e.getMessage()));
   }
 
   @ExceptionHandler(AuthenticationException.class)
@@ -69,14 +68,13 @@ public class GlobalExceptionHandler {
       default -> errorMessage = e.getMessage();
     }
     return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-        .body(ApiCommonResponse.failure(errorMessage));
+        .body(ApiCommonResponse.fail(errorMessage));
   }
 
   @ExceptionHandler(AccessDeniedException.class)
   public ResponseEntity<ApiCommonResponse<Object>> handleAccessDeniedException(
       AccessDeniedException e) {
     log.error("AccessDeniedException 오류 status - 401 : {}", e.getMessage(), e);
-    return ResponseEntity.status(HttpStatus.FORBIDDEN)
-        .body(ApiCommonResponse.failure(e.getMessage()));
+    return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ApiCommonResponse.fail(e.getMessage()));
   }
 }

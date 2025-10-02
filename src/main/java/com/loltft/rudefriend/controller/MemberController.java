@@ -39,6 +39,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @Validated
 @RequestMapping("/api/member")
+@PreAuthorize("isAuthenticated() and !hasRole('ANONYMOUS')")
 public class MemberController {
 
   private final MemberService memberService;
@@ -48,8 +49,7 @@ public class MemberController {
   public ResponseEntity<ApiCommonResponse<MemberResponse>> createMember(
       @RequestBody @Validated MemberRequest memberRequest) {
     MemberResponse result = memberService.createMember(memberRequest);
-    return ResponseEntity.status(HttpStatus.CREATED)
-        .body(ApiCommonResponse.success("회원가입 성공", result));
+    return ResponseEntity.status(HttpStatus.CREATED).body(ApiCommonResponse.ok("회원가입 성공", result));
   }
 
   @Operation(summary = "회원 수정", description = "회원 정보를 수정합니다.")
@@ -62,70 +62,69 @@ public class MemberController {
       throw new AuthenticationCredentialsNotFoundException("로그인 정보가 없습니다.");
     }
     MemberResponse result = memberService.updateMember(id, memberRequest, userDetails);
-    return ResponseEntity.ok(ApiCommonResponse.success("회원 수정 성공", result));
+    return ResponseEntity.ok(ApiCommonResponse.ok("회원 수정 성공", result));
   }
 
   @Operation(summary = "회원 활성화/비활성화", description = "회원 사용 상태를 변경합니다.")
   @PatchMapping("/{id}")
-  @PreAuthorize("isAuthenticated() and hasRole('SUPER') and hasRole('ADMIN')")
   public ResponseEntity<ApiCommonResponse<MemberResponse>> updateStatusMember(
       @PathVariable UUID id) {
     MemberResponse result = memberService.updateStatusMember(id);
-    return ResponseEntity.ok(ApiCommonResponse.success("회원 수정 성공", result));
+    return ResponseEntity.ok(ApiCommonResponse.ok("회원 수정 성공", result));
   }
 
   @Operation(summary = "회원 상세 조회", description = "회원 상세 정보를 조회합니다.")
   @GetMapping("/{id}")
   public ResponseEntity<ApiCommonResponse<MemberResponse>> getMemberDetail(@PathVariable UUID id) {
     MemberResponse result = memberService.getMemberDetail(id);
-    return ResponseEntity.ok(ApiCommonResponse.success("회원 수정 성공", result));
+    return ResponseEntity.ok(ApiCommonResponse.ok("회원 수정 성공", result));
   }
 
   @Operation(summary = "회원 목록 조회", description = "회원 목록을 조회합니다. PAGE_SIZE = 20")
   @GetMapping
   public ResponseEntity<ApiCommonResponse<List<MemberResponse>>> getMemberList(
       @RequestParam(required = false) @Schema(description = "검색어 - 닉네임, 로그인 ID, 게임 이름, 익명 회원 IP 주소")
-          String search,
+      String search,
       @RequestParam(required = false)
-          @Schema(
-              description = "롤/롤체 선택 옵션",
-              allowableValues = {"LOL", "TFT"})
-          GameSelectOption option,
+      @Schema(
+          description = "롤/롤체 선택 옵션",
+          allowableValues = {"LOL", "TFT"})
+      GameSelectOption option,
       @RequestParam(required = false)
-          @Schema(
-              description = "티어 선택 옵션",
-              allowableValues = {
-                "IRON",
-                "SILVER",
-                "GOLD",
-                "BRONZE",
-                "PLATINUM",
-                "EMERALD",
-                "DIAMOND",
-                "MASTER",
-                "GRANDMASTER",
-                "CHALLENGER"
-              })
-          Tier tier,
+      @Schema(
+          description = "티어 선택 옵션",
+          allowableValues = {
+              "IRON",
+              "SILVER",
+              "GOLD",
+              "BRONZE",
+              "PLATINUM",
+              "EMERALD",
+              "DIAMOND",
+              "MASTER",
+              "GRANDMASTER",
+              "CHALLENGER"
+          })
+      Tier tier,
       @RequestParam(required = false) @Schema(description = "계정 사용 상태") Boolean status,
       @RequestParam(required = false)
-          @Schema(
-              description = "회원 권한",
-              allowableValues = {"USER", "ADMIN", "SUPER", "ANONYMOUS"})
-          Role role,
+      @Schema(
+          description = "회원 권한",
+          allowableValues = {"USER", "ADMIN", "SUPER", "ANONYMOUS"})
+      Role role,
       @RequestParam(required = false)
-          @DateTimeFormat(pattern = "yyyy-MM-dd")
-          @Schema(description = "등록일/수정일 시작일")
-          LocalDate dateFrom,
+      @DateTimeFormat(pattern = "yyyy-MM-dd")
+      @Schema(description = "등록일/수정일 시작일")
+      LocalDate dateFrom,
       @RequestParam(required = false)
-          @DateTimeFormat(pattern = "yyyy-MM-dd")
-          @Schema(description = "등록일/수정일 종료일")
-          LocalDate dateTo,
+      @DateTimeFormat(pattern = "yyyy-MM-dd")
+      @Schema(description = "등록일/수정일 종료일")
+      LocalDate dateTo,
       @RequestParam(required = false)
-          @Schema(
-              description = "등록일/수정일 선택 옵션 (create = 등록일 | update = 수정일)",
-              allowableValues = {"CREATE", "UPDATE"})
-          DateOption dateOption,
+      @Schema(
+          description = "등록일/수정일 선택 옵션 (create = 등록일 | update = 수정일)",
+          allowableValues = {"CREATE", "UPDATE"})
+      DateOption dateOption,
       @RequestParam @Schema(description = "현재 페이지") @Min(1) Integer pageNo) {
     List<MemberResponse> result =
         memberService.getMemberList(
@@ -133,6 +132,6 @@ public class MemberController {
     Integer resultCount =
         memberService.getMemberListCount(
             search, option, tier, status, role, dateFrom, dateTo, dateOption);
-    return ResponseEntity.ok(ApiCommonResponse.success("회원 수정 성공", result, resultCount));
+    return ResponseEntity.ok(ApiCommonResponse.ok("회원 조회 성공", result, resultCount));
   }
 }

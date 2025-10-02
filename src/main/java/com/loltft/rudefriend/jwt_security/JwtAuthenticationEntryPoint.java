@@ -41,6 +41,6 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
     response.setContentType("application/json;charset=UTF-8");
     response
         .getWriter()
-        .write(objectMapper.writeValueAsString(ApiCommonResponse.failure(errorMessage)));
+        .write(objectMapper.writeValueAsString(ApiCommonResponse.fail(errorMessage)));
   }
 }

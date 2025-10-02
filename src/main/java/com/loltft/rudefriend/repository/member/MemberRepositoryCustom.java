@@ -1,6 +1,7 @@
 package com.loltft.rudefriend.repository.member;
 
 import com.loltft.rudefriend.dto.enums.DateOption;
+import com.loltft.rudefriend.dto.enums.FilterMode;
 import com.loltft.rudefriend.dto.enums.GameSelectOption;
 import com.loltft.rudefriend.dto.member.MemberResponse;
 import com.loltft.rudefriend.entity.enums.Role;
@@ -14,6 +15,7 @@ public interface MemberRepositoryCustom {
       String search,
       GameSelectOption option,
       Tier tier,
+      FilterMode filterMode,
       Boolean status,
       Role role,
       LocalDateTime localDateTime,
@@ -25,6 +27,7 @@ public interface MemberRepositoryCustom {
       String search,
       GameSelectOption option,
       Tier tier,
+      FilterMode filterMode,
       Boolean status,
       Role role,
       LocalDateTime localDateTime,

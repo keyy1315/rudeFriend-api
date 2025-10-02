@@ -104,8 +104,8 @@ public class JwtTokenProvider {
       throw new AuthenticationCredentialsNotFoundException("토큰 정보가 없습니다.");
     }
     try {
-      Claims claims =
-          Jwts.parser().verifyWith(getSigningKey()).build().parseSignedClaims(token).getPayload();
+      Claims claims = Jwts.parser().verifyWith(getSigningKey()).build().parseSignedClaims(token)
+          .getPayload();
       return claims.get(jwtProperties.getClaimKey()).toString();
     } catch (Exception e) {
       throw new JwtException(handleJwtExceptionMessage(e));
@@ -122,8 +122,8 @@ public class JwtTokenProvider {
       throw new AuthenticationCredentialsNotFoundException("토큰 정보가 없습니다.");
     }
     try {
-      Claims claims =
-          Jwts.parser().verifyWith(getSigningKey()).build().parseSignedClaims(token).getPayload();
+      Claims claims = Jwts.parser().verifyWith(getSigningKey()).build().parseSignedClaims(token)
+          .getPayload();
       return claims.getSubject();
     } catch (Exception e) {
       throw new JwtException(handleJwtExceptionMessage(e));

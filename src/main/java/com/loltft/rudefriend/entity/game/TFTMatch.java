@@ -20,6 +20,7 @@ import org.hibernate.annotations.JdbcTypeCode;
 @AllArgsConstructor
 @SuperBuilder
 public class TFTMatch {
+
   @Id
   @JdbcTypeCode(Types.BINARY)
   @Column(columnDefinition = "BINARY(16)")

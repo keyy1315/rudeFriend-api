@@ -37,16 +37,15 @@ public class AuthService {
    * <p>생성 된 accessToken은 응답 헤더에 전달, refreshToken은 쿠키에 저장
    *
    * @param loginRequest 로그인 요청 객체
-   * @param response 클라이언트 응답
+   * @param response     클라이언트 응답
    * @return 로그인 한 회원의 정보 LoginResponse
    */
   @Transactional
   public MemberResponse authenticateMember(
       LoginRequest loginRequest, HttpServletResponse response) {
-    Authentication authentication =
-        authenticationManager.authenticate(
-            new UsernamePasswordAuthenticationToken(
-                loginRequest.getMemberId(), loginRequest.getPassword()));
+    Authentication authentication = authenticationManager.authenticate(
+        new UsernamePasswordAuthenticationToken(
+            loginRequest.getMemberId(), loginRequest.getPassword()));
 
     SecurityContextHolder.getContext().setAuthentication(authentication);
 
@@ -56,10 +55,9 @@ public class AuthService {
     responseTokens(accessToken, refreshToken, response);
 
     String hashedRefreshToken = tokenHashUtil.hashToken(refreshToken);
-    Member member =
-        memberRepository
-            .findByMemberId(tokenProvider.getUsernameFromAccessToken(accessToken))
-            .orElseThrow(() -> new UsernameNotFoundException(loginRequest.getMemberId()));
+    Member member = memberRepository
+        .findByMemberId(tokenProvider.getUsernameFromAccessToken(accessToken))
+        .orElseThrow(() -> new UsernameNotFoundException(loginRequest.getMemberId()));
     member.updateRefreshToken(hashedRefreshToken);
 
     return MemberResponse.from(member);
@@ -68,9 +66,9 @@ public class AuthService {
   /**
    * 생성 된 토큰들을 클라이언트에 전달
    *
-   * @param accessToken 생성된 accessToken
+   * @param accessToken  생성된 accessToken
    * @param refreshToken 생성된 refreshToken
-   * @param response 클라이언트 응답
+   * @param response     클라이언트 응답
    */
   public void responseTokens(
       String accessToken, String refreshToken, HttpServletResponse response) {
@@ -98,10 +96,9 @@ public class AuthService {
     if (!StringUtils.hasText(memberId)) {
       throw new AccessDeniedException("로그인 정보가 없습니다.");
     }
-    Member member =
-        memberRepository
-            .findByMemberId(memberId)
-            .orElseThrow(() -> new UsernameNotFoundException(memberId));
+    Member member = memberRepository
+        .findByMemberId(memberId)
+        .orElseThrow(() -> new UsernameNotFoundException(memberId));
 
     member.updateRefreshToken(null);
 

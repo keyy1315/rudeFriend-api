@@ -1,6 +1,7 @@
 package com.loltft.rudefriend.service;
 
 import com.loltft.rudefriend.dto.enums.DateOption;
+import com.loltft.rudefriend.dto.enums.FilterMode;
 import com.loltft.rudefriend.dto.enums.GameSelectOption;
 import com.loltft.rudefriend.dto.member.MemberRequest;
 import com.loltft.rudefriend.dto.member.MemberResponse;
@@ -65,9 +66,8 @@ public class MemberService {
       gameAccountInfo = GameAccountInfo.fromRequest(memberRequest.getGameInfo());
     }
 
-    Member member =
-        Member.fromRequest(
-            memberRequest, passwordEncoder.encode(memberRequest.getPassword()), gameAccountInfo);
+    Member member = Member.fromRequest(
+        memberRequest, passwordEncoder.encode(memberRequest.getPassword()), gameAccountInfo);
 
     memberRepository.save(member);
 
@@ -77,20 +77,19 @@ public class MemberService {
   /**
    * 회원 정보 수정
    *
-   * @param id 수정하려는 회원 PK
+   * @param id            수정하려는 회원 PK
    * @param memberRequest 회원 수정 요청 객체
-   * @param userDetails 로그인 한 사용자 인증 객체
+   * @param userDetails   로그인 한 사용자 인증 객체
    * @return 수정 된 회원 응답 객체
-   * @throws AccessDeniedException 회원 권한이 ADMIN, SUPER가 아닐 경우, 본인이 아닐 경우
+   * @throws AccessDeniedException                      회원 권한이 ADMIN, SUPER가 아닐 경우, 본인이 아닐 경우
    * @throws AuthenticationCredentialsNotFoundException 로그인 ID가 없을 경우
    */
   @Transactional
   public MemberResponse updateMember(
       UUID id, MemberRequest memberRequest, UserDetails userDetails) {
-    Member member =
-        memberRepository
-            .findById(id)
-            .orElseThrow(() -> new NoSuchElementException("존재하지 않는 회원 ID : " + id));
+    Member member = memberRepository
+        .findById(id)
+        .orElseThrow(() -> new NoSuchElementException("존재하지 않는 회원 ID : " + id));
     String loginUsername = userDetails.getUsername();
     String role = userDetails.getAuthorities().iterator().next().getAuthority();
 
@@ -119,10 +118,9 @@ public class MemberService {
    */
   @Transactional
   public MemberResponse updateStatusMember(UUID id) {
-    Member member =
-        memberRepository
-            .findById(id)
-            .orElseThrow(() -> new NoSuchElementException("존재하지 않는 회원 ID : " + id));
+    Member member = memberRepository
+        .findById(id)
+        .orElseThrow(() -> new NoSuchElementException("존재하지 않는 회원 ID : " + id));
     member.updateStatus();
 
     return MemberResponse.from(member);
@@ -135,10 +133,9 @@ public class MemberService {
    * @return 회원 응답 객체
    */
   public MemberResponse getMemberDetail(UUID id) {
-    Member member =
-        memberRepository
-            .findById(id)
-            .orElseThrow(() -> new NoSuchElementException("존재하지 않는 회원 ID : " + id));
+    Member member = memberRepository
+        .findById(id)
+        .orElseThrow(() -> new NoSuchElementException("존재하지 않는 회원 ID : " + id));
 
     return MemberResponse.from(member);
   }
@@ -146,21 +143,23 @@ public class MemberService {
   /**
    * 검색 조건에 맞는 회원 목록 조회
    *
-   * @param search 검색어 - 닉네임, 로그인 ID, 게임 이름
-   * @param option 롤/롤체 선택 옵션 - LOL, TFT
-   * @param tier 티어 선택
-   * @param status 회원 사용 상태 - true, false
-   * @param role 권한 - USER, ADMIN, SUPER, ANONYMOUS
-   * @param dateFrom 등록일/수정일 시작일
-   * @param dateTo 등록일/수정일 종료일
+   * @param search     검색어 - 닉네임, 로그인 ID, 게임 이름
+   * @param option     롤/롤체 선택 옵션 - LOL, TFT
+   * @param tier       티어 선택
+   * @param filterMode 티어의 같음/이상/이하 조회 옵션
+   * @param status     회원 사용 상태 - true, false
+   * @param role       권한 - USER, ADMIN, SUPER, ANONYMOUS
+   * @param dateFrom   등록일/수정일 시작일
+   * @param dateTo     등록일/수정일 종료일
    * @param dateOption 등록일/수정일 선택 옵션
-   * @param pageNo 현재 페이지
+   * @param pageNo     현재 페이지
    * @return 20개 회원 목록
    */
   public List<MemberResponse> getMemberList(
       String search,
       GameSelectOption option,
       Tier tier,
+      FilterMode filterMode,
       Boolean status,
       Role role,
       LocalDate dateFrom,
@@ -173,6 +172,7 @@ public class MemberService {
         search,
         option,
         tier,
+        filterMode,
         status,
         role,
         dateTimeMap.get(FROM),
@@ -184,13 +184,14 @@ public class MemberService {
   /**
    * 검색 조건에 맞는 회원 전체 개수
    *
-   * @param search 검색어 - 닉네임, 로그인 ID, 게임 이름
-   * @param option 롤/롤체 선택 옵션 - LOL, TFT
-   * @param tier 티어 선택
-   * @param status 회원 사용 상태 - true, false
-   * @param role 권한 - USER, ADMIN, SUPER, ANONYMOUS
-   * @param dateFrom 등록일/수정일 시작일
-   * @param dateTo 등록일/수정일 종료일
+   * @param search     검색어 - 닉네임, 로그인 ID, 게임 이름
+   * @param option     롤/롤체 선택 옵션 - LOL, TFT
+   * @param tier       티어 선택
+   * @param filterMode 티어의 같음/이상/이하 조회 옵션
+   * @param status     회원 사용 상태 - true, false
+   * @param role       권한 - USER, ADMIN, SUPER, ANONYMOUS
+   * @param dateFrom   등록일/수정일 시작일
+   * @param dateTo     등록일/수정일 종료일
    * @param dateOption 등록일/수정일 선택 옵션
    * @return 회원 개수
    */
@@ -198,6 +199,7 @@ public class MemberService {
       String search,
       GameSelectOption option,
       Tier tier,
+      FilterMode filterMode,
       Boolean status,
       Role role,
       LocalDate dateFrom,
@@ -210,6 +212,7 @@ public class MemberService {
             search,
             option,
             tier,
+            filterMode,
             status,
             role,
             dateTimeMap.get(FROM),

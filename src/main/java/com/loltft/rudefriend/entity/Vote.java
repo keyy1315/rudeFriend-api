@@ -22,10 +22,9 @@ import org.hibernate.annotations.JdbcTypeCode;
 
 @Entity
 @Table(
-    name = "vote",
-    uniqueConstraints = {
-      @UniqueConstraint(columnNames = {"board_id", "member_id"}),
-      @UniqueConstraint(columnNames = {"board_id", "ip_address"})
+    name = "vote", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"board_id", "member_id"}),
+        @UniqueConstraint(columnNames = {"board_id", "ip_address"})
     })
 @Getter
 @NoArgsConstructor

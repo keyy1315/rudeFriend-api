@@ -2,6 +2,7 @@ package com.loltft.rudefriend.controller;
 
 import com.loltft.rudefriend.dto.ApiCommonResponse;
 import com.loltft.rudefriend.dto.enums.DateOption;
+import com.loltft.rudefriend.dto.enums.FilterMode;
 import com.loltft.rudefriend.dto.enums.GameSelectOption;
 import com.loltft.rudefriend.dto.member.MemberRequest;
 import com.loltft.rudefriend.dto.member.MemberResponse;
@@ -83,17 +84,11 @@ public class MemberController {
   @Operation(summary = "회원 목록 조회", description = "회원 목록을 조회합니다. PAGE_SIZE = 20")
   @GetMapping
   public ResponseEntity<ApiCommonResponse<List<MemberResponse>>> getMemberList(
-      @RequestParam(required = false) @Schema(description = "검색어 - 닉네임, 로그인 ID, 게임 이름, 익명 회원 IP 주소")
-      String search,
-      @RequestParam(required = false)
-      @Schema(
-          description = "롤/롤체 선택 옵션",
-          allowableValues = {"LOL", "TFT"})
-      GameSelectOption option,
-      @RequestParam(required = false)
-      @Schema(
-          description = "티어 선택 옵션",
-          allowableValues = {
+      @RequestParam(required = false) @Schema(description = "검색어 - 닉네임, 로그인 ID, 게임 이름, 익명 회원 IP 주소") String search,
+      @RequestParam(required = false) @Schema(
+          description = "롤/롤체 선택 옵션", allowableValues = {"LOL", "TFT"}) GameSelectOption option,
+      @RequestParam(required = false) @Schema(
+          description = "티어 선택 옵션", allowableValues = {
               "IRON",
               "SILVER",
               "GOLD",
@@ -104,34 +99,24 @@ public class MemberController {
               "MASTER",
               "GRANDMASTER",
               "CHALLENGER"
-          })
-      Tier tier,
+          }) Tier tier,
+      @RequestParam(required = false) @Schema(
+          description = "해당하는 티어의 이상/이하/같음 조회 선택 옵션", allowableValues = {"EQUAL", "OVER",
+              "UNDER"}) FilterMode filterMode,
       @RequestParam(required = false) @Schema(description = "계정 사용 상태") Boolean status,
-      @RequestParam(required = false)
-      @Schema(
-          description = "회원 권한",
-          allowableValues = {"USER", "ADMIN", "SUPER", "ANONYMOUS"})
-      Role role,
-      @RequestParam(required = false)
-      @DateTimeFormat(pattern = "yyyy-MM-dd")
-      @Schema(description = "등록일/수정일 시작일")
-      LocalDate dateFrom,
-      @RequestParam(required = false)
-      @DateTimeFormat(pattern = "yyyy-MM-dd")
-      @Schema(description = "등록일/수정일 종료일")
-      LocalDate dateTo,
-      @RequestParam(required = false)
-      @Schema(
-          description = "등록일/수정일 선택 옵션 (create = 등록일 | update = 수정일)",
-          allowableValues = {"CREATE", "UPDATE"})
-      DateOption dateOption,
-      @RequestParam @Schema(description = "현재 페이지") @Min(1) Integer pageNo) {
-    List<MemberResponse> result =
-        memberService.getMemberList(
-            search, option, tier, status, role, dateFrom, dateTo, dateOption, pageNo);
-    Integer resultCount =
-        memberService.getMemberListCount(
-            search, option, tier, status, role, dateFrom, dateTo, dateOption);
-    return ResponseEntity.ok(ApiCommonResponse.ok("회원 조회 성공", result, resultCount));
+      @RequestParam(required = false) @Schema(
+          description = "회원 권한", allowableValues = {"USER", "ADMIN", "SUPER",
+              "ANONYMOUS"}) Role role,
+      @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") @Schema(description = "등록일/수정일 시작일") LocalDate dateFrom,
+      @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") @Schema(description = "등록일/수정일 종료일") LocalDate dateTo,
+      @RequestParam(required = false) @Schema(
+          description = "등록일/수정일 선택 옵션 (create = 등록일 | update = 수정일)", allowableValues = {"CREATE",
+              "UPDATE"}) DateOption dateOption,
+      @RequestParam(defaultValue = "1") @Schema(description = "현재 페이지") @Min(1) Integer pageNo) {
+    List<MemberResponse> result = memberService.getMemberList(
+        search, option, tier, filterMode, status, role, dateFrom, dateTo, dateOption, pageNo);
+    Integer resultCount = memberService.getMemberListCount(
+        search, option, tier, filterMode, status, role, dateFrom, dateTo, dateOption);
+    return ResponseEntity.ok(ApiCommonResponse.ok("회원 목록 조회 성공", result, resultCount));
   }
 }

@@ -38,8 +38,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
   @Override
   protected void doFilterInternal(
-      HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-      throws ServletException, IOException {
+      HttpServletRequest request, HttpServletResponse response,
+      FilterChain filterChain) throws ServletException, IOException {
     try {
       String token = tokenProvider.getAccessTokenFromRequest(request);
 
@@ -50,22 +50,21 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
           UserDetails userDetails = customUserDetailService.loadUserByUsername(username);
 
-          WebAuthenticationDetails webDetail =
-              new WebAuthenticationDetailsSource().buildDetails(request);
+          WebAuthenticationDetails webDetail = new WebAuthenticationDetailsSource().buildDetails(
+              request);
           log.info("요청 클라이언트 환경 정보 : {}", webDetail);
 
-          UsernamePasswordAuthenticationToken authenticationToken =
-              new UsernamePasswordAuthenticationToken(
-                  userDetails, null, userDetails.getAuthorities());
+          UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
+              userDetails, null, userDetails.getAuthorities());
           authenticationToken.setDetails(webDetail);
 
           SecurityContextHolder.getContext().setAuthentication(authenticationToken);
         }
       } else {
-        List<GrantedAuthority> grantedAuthorities =
-            List.of(new SimpleGrantedAuthority("ROLE_ANONYMOUS"));
-        Authentication anonymousAuthentication =
-            new AnonymousAuthenticationToken("ANONYMOUS", "anonymous", grantedAuthorities);
+        List<GrantedAuthority> grantedAuthorities = List.of(new SimpleGrantedAuthority(
+            "ROLE_ANONYMOUS"));
+        Authentication anonymousAuthentication = new AnonymousAuthenticationToken("ANONYMOUS",
+            "anonymous", grantedAuthorities);
         SecurityContextHolder.getContext().setAuthentication(anonymousAuthentication);
       }
     } catch (JwtException e) {
@@ -79,7 +78,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
   /**
    * 토큰 검증 오류 메세지를 클라이언트에 직접 반환하기 위한 메소드
    *
-   * @param e 발생한 에러
+   * @param e        발생한 에러
    * @param response 응답
    * @throws IOException 응답 메세지 전달 오류 발생 시
    */

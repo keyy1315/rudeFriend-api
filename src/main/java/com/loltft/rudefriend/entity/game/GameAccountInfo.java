@@ -75,4 +75,17 @@ public class GameAccountInfo {
         .doubleUpTier(gameInfo.getDoubleUpTier())
         .build();
   }
+
+  public static GameAccountInfo fromMember(GameAccountInfo gameInfo) {
+    return GameAccountInfo.builder()
+        .id(gameInfo.getId())
+        .gameName(gameInfo.getGameName())
+        .tagLine(gameInfo.getTagLine())
+        .iconUrl(gameInfo.getIconUrl())
+        .lolTier(gameInfo.getLolTier())
+        .flexTier(gameInfo.getFlexTier())
+        .tftTier(gameInfo.getTftTier())
+        .doubleUpTier(gameInfo.getDoubleUpTier())
+        .build();
+  }
 }

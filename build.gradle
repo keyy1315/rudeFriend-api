@@ -68,6 +68,6 @@ tasks.withType(JavaCompile).configureEach {
 
 spotless {
     java {
-        googleJavaFormat('1.28.0')
+        eclipse().configFile(".idea/code-style/GoogleStyle_copy.xml")
     }
 }

@@ -33,8 +33,8 @@ public class ApiCommonResponse<T> {
    * 목록 성공 응답
    *
    * @param message 응답 메세지
-   * @param data 응답 데이터
-   * @param count 데이터 개수
+   * @param data    응답 데이터
+   * @param count   데이터 개수
    * @return 조회된 데이터 개수, 응답 데이터 목록이 포함 된 공통 응답 객체
    */
   public static <T> ApiCommonResponse<T> ok(String message, T data, Integer count) {
@@ -49,7 +49,7 @@ public class ApiCommonResponse<T> {
    * 단일 성공 응답
    *
    * @param message 응답 메세지
-   * @param data 응답 데이터
+   * @param data    응답 데이터
    * @return 단일 데이터만 존재하는 공통 응답 객체
    */
   public static <T> ApiCommonResponse<T> ok(String message, T data) {

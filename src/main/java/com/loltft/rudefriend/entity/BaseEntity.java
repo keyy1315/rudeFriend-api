@@ -23,6 +23,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @SuperBuilder(toBuilder = true)
 @NoArgsConstructor
 public class BaseEntity {
+
   @CreatedDate
   @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
   @Schema(description = "생성 일시")

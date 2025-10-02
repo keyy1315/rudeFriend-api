@@ -1,9 +1,9 @@
 package com.loltft.rudefriend.dto.member;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.loltft.rudefriend.dto.game.GameInfoResponse;
 import com.loltft.rudefriend.entity.Member;
 import com.loltft.rudefriend.entity.enums.Role;
+import com.loltft.rudefriend.entity.game.GameAccountInfo;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -18,7 +18,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Schema(description = "로그인 응답 객체")
+@Schema(description = "회원 응답 DTO")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class MemberResponse {
 
@@ -43,7 +43,7 @@ public class MemberResponse {
   @Schema(description = "계정 수정 일시")
   private LocalDateTime updatedAt;
 
-  private GameInfoResponse gameInfo;
+  private GameAccountInfo gameInfo;
 
   public static MemberResponse from(Member member) {
     return MemberResponse.builder()
@@ -53,7 +53,7 @@ public class MemberResponse {
         .gameInfo(
             member.getGameAccountInfo() == null
                 ? null
-                : GameInfoResponse.from(member.getGameAccountInfo()))
+                : GameAccountInfo.fromMember(member.getGameAccountInfo()))
         .status(member.getStatus())
         .role(member.getRole())
         .build();

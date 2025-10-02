@@ -22,27 +22,25 @@ public class DataInitializer implements CommandLineRunner {
   public void run(String... args) throws Exception {
     String memberId = "super";
     String password = "1234";
-    Member member =
-        memberRepository
-            .findByMemberId(memberId)
-            .orElseGet(
-                () -> {
-                  Member newMember =
-                      Member.builder()
-                          .id(UUID.randomUUID())
-                          .memberId(memberId)
-                          .name("super")
-                          .password(passwordEncoder.encode(password))
-                          .status(true)
-                          .role(Role.SUPER)
-                          .build();
-                  try {
-                    return memberRepository.save(newMember);
-                  } catch (Exception e) {
-                    log.error("Super Member already exists!", e);
-                    return memberRepository.findByMemberId(memberId).orElse(newMember);
-                  }
-                });
+    Member member = memberRepository
+        .findByMemberId(memberId)
+        .orElseGet(
+            () -> {
+              Member newMember = Member.builder()
+                  .id(UUID.randomUUID())
+                  .memberId(memberId)
+                  .name("super")
+                  .password(passwordEncoder.encode(password))
+                  .status(true)
+                  .role(Role.SUPER)
+                  .build();
+              try {
+                return memberRepository.save(newMember);
+              } catch (Exception e) {
+                log.error("Super Member already exists!", e);
+                return memberRepository.findByMemberId(memberId).orElse(newMember);
+              }
+            });
     log.info("Super Member created Successfully : {}", member.getMemberId());
   }
 }

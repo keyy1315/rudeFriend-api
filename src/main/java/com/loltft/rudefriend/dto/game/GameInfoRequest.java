@@ -17,26 +17,22 @@ public class GameInfoRequest {
 
   @Schema(description = "라이엇 계정 PUUID")
   @NotBlank(
-      message = "계정 PUUID는 필수값 입니다.",
-      groups = {Validation.CREATE.class, Validation.UPDATE.class})
+      message = "계정 PUUID는 필수값 입니다.", groups = {Validation.CREATE.class, Validation.UPDATE.class})
   private UUID gameAccountId;
 
   @Schema(description = "계정 이름")
   @NotBlank(
-      message = "계정 이름은 필수값 입니다.",
-      groups = {Validation.CREATE.class, Validation.UPDATE.class})
+      message = "계정 이름은 필수값 입니다.", groups = {Validation.CREATE.class, Validation.UPDATE.class})
   private String gameName;
 
   @Schema(description = "계정 태그")
   @NotBlank(
-      message = "계정 태그는 필수값 입니다.",
-      groups = {Validation.CREATE.class, Validation.UPDATE.class})
+      message = "계정 태그는 필수값 입니다.", groups = {Validation.CREATE.class, Validation.UPDATE.class})
   private String tagLine;
 
   @Schema(description = "아이콘 URL")
   @NotBlank(
-      message = "계정 아이콘 URL은 필수값 입니다.",
-      groups = {Validation.CREATE.class, Validation.UPDATE.class})
+      message = "계정 아이콘 URL은 필수값 입니다.", groups = {Validation.CREATE.class, Validation.UPDATE.class})
   private String iconUrl;
 
   @Schema(description = "롤 솔랭 티어")

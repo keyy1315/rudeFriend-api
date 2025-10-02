@@ -29,10 +29,8 @@ public class AuthController {
   private final AuthService authService;
 
   @Operation(
-      summary = "로그인",
-      description =
-          "사용자 로그인을 처리하고 response Header에 'access_token', 'refresh_token' 이름으로 토큰들을 저장하고"
-              + " 사용자 정보를 반환합니다. ")
+      summary = "로그인", description = "사용자 로그인을 처리하고 response Header에 'access_token', 'refresh_token' 이름으로 토큰들을 저장하고"
+          + " 사용자 정보를 반환합니다. ")
   @PostMapping("/login")
   public ResponseEntity<ApiCommonResponse<MemberResponse>> login(
       @RequestBody @Validated LoginRequest loginRequest, HttpServletResponse response) {

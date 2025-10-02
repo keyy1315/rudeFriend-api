@@ -10,7 +10,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Schema(description = "회원가입 요청 객체")
+@Schema(description = "회원가입 요청 DTO")
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
@@ -18,18 +18,15 @@ public class MemberRequest {
 
   @Schema(description = "로그인 ID")
   @NotBlank(
-      message = "로그인 ID는 필수값 입니다.",
-      groups = {Validation.CREATE.class, Validation.UPDATE.class})
+      message = "로그인 ID는 필수값 입니다.", groups = {Validation.CREATE.class, Validation.UPDATE.class})
   private String memberId;
 
   @Schema(description = "비밀번호")
   @NotBlank(
-      message = "비밀번호는 필수값 입니다.",
-      groups = {Validation.CREATE.class, Validation.UPDATE.class})
+      message = "비밀번호는 필수값 입니다.", groups = {Validation.CREATE.class, Validation.UPDATE.class})
   @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
   @Pattern(
-      regexp = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>\\/?]{8,}$",
-      message = "비밀번호는 영문과 숫자를 포함해 8자 이상이어야 합니다.")
+      regexp = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>\\/?]{8,}$", message = "비밀번호는 영문과 숫자를 포함해 8자 이상이어야 합니다.")
   private String password;
 
   @Schema(description = "닉네임 nullable")

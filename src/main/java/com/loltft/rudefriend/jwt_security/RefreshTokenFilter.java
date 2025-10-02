@@ -29,8 +29,8 @@ public class RefreshTokenFilter extends OncePerRequestFilter {
 
   @Override
   protected void doFilterInternal(
-      HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-      throws ServletException, IOException {
+      HttpServletRequest request, HttpServletResponse response,
+      FilterChain filterChain) throws ServletException, IOException {
     String accessToken = tokenProvider.getAccessTokenFromRequest(request);
 
     try {
@@ -41,16 +41,15 @@ public class RefreshTokenFilter extends OncePerRequestFilter {
       String refreshToken = tokenProvider.getRefreshTokenFromCookie(request);
 
       if (refreshToken != null && tokenProvider.validateToken(refreshToken)) {
-        String memberId =
-            memberService.findByRefreshToken(tokenHashUtil.hashToken(refreshToken)).getMemberId();
+        String memberId = memberService.findByRefreshToken(tokenHashUtil.hashToken(refreshToken))
+            .getMemberId();
 
         UserDetails userDetails = customUserDetailService.loadUserByUsername(memberId);
 
         new AccountStatusUserDetailsChecker().check(userDetails);
 
-        UsernamePasswordAuthenticationToken authenticationToken =
-            new UsernamePasswordAuthenticationToken(
-                userDetails, null, userDetails.getAuthorities());
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
+            userDetails, null, userDetails.getAuthorities());
 
         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
         String newAccessToken = tokenProvider.generateAccessToken(authenticationToken);

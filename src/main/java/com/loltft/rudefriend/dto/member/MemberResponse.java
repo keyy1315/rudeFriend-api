@@ -1,17 +1,27 @@
 package com.loltft.rudefriend.dto.member;
 
-import com.loltft.rudefriend.dto.game.GameInfoResponse;
-import com.loltft.rudefriend.entity.Member;
-import io.swagger.v3.oas.annotations.media.Schema;
+import java.time.LocalDateTime;
 import java.util.UUID;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.loltft.rudefriend.entity.Member;
+import com.loltft.rudefriend.entity.enums.Role;
+import com.loltft.rudefriend.entity.game.GameAccountInfo;
+
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
+@Setter
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
-@Schema(description = "로그인 응답 객체")
+@Schema(description = "회원 응답 DTO")
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class MemberResponse {
 
   @Schema(description = "로그인 한 회원 PK")
@@ -23,7 +33,19 @@ public class MemberResponse {
   @Schema(description = "로그인 한 회원 이름 nullable")
   private String name;
 
-  private GameInfoResponse gameInfo;
+  @Schema(description = "회원 상태")
+  private Boolean status;
+
+  @Schema(description = "회원 권한")
+  private Role role;
+
+  @Schema(description = "계정 생성 일시")
+  private LocalDateTime createdAt;
+
+  @Schema(description = "계정 수정 일시")
+  private LocalDateTime updatedAt;
+
+  private GameAccountInfo gameInfo;
 
   public static MemberResponse from(Member member) {
     return MemberResponse.builder()
@@ -33,7 +55,9 @@ public class MemberResponse {
         .gameInfo(
             member.getGameAccountInfo() == null
                 ? null
-                : GameInfoResponse.from(member.getGameAccountInfo()))
+                : GameAccountInfo.fromMember(member.getGameAccountInfo()))
+        .status(member.getStatus())
+        .role(member.getRole())
         .build();
   }
 }

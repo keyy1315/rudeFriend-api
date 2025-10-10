@@ -1,13 +1,15 @@
 package com.loltft.rudefriend.service;
 
-import com.loltft.rudefriend.entity.Member;
-import com.loltft.rudefriend.repository.MemberRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+
+import com.loltft.rudefriend.entity.Member;
+import com.loltft.rudefriend.repository.member.MemberRepository;
+
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -24,10 +26,9 @@ public class CustomUserDetailService implements UserDetailsService {
    */
   @Override
   public UserDetails loadUserByUsername(String memberId) throws UsernameNotFoundException {
-    Member member =
-        memberRepository
-            .findByMemberId(memberId)
-            .orElseThrow(() -> new UsernameNotFoundException(memberId));
+    Member member = memberRepository
+        .findByMemberId(memberId)
+        .orElseThrow(() -> new UsernameNotFoundException(memberId));
 
     return User.builder()
         .username(member.getMemberId())

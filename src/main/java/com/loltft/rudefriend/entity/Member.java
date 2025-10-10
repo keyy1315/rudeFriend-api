@@ -1,8 +1,15 @@
 package com.loltft.rudefriend.entity;
 
+import java.sql.Types;
+import java.util.UUID;
+
+import org.hibernate.annotations.JdbcTypeCode;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.loltft.rudefriend.dto.member.MemberRequest;
 import com.loltft.rudefriend.entity.enums.Role;
 import com.loltft.rudefriend.entity.game.GameAccountInfo;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.media.Schema.AccessMode;
 import jakarta.persistence.Column;
@@ -13,13 +20,10 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import java.sql.Types;
-import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
-import org.hibernate.annotations.JdbcTypeCode;
 
 @Entity
 @Table(name = "member")
@@ -65,7 +69,32 @@ public class Member extends BaseEntity {
   @OneToOne(fetch = FetchType.LAZY)
   private GameAccountInfo gameAccountInfo;
 
+  public static Member fromRequest(
+      MemberRequest memberRequest, String encodedPassword, GameAccountInfo gameAccountInfo) {
+    return Member.builder()
+        .id(UUID.randomUUID())
+        .memberId(memberRequest.getMemberId())
+        .password(encodedPassword)
+        .name(memberRequest.getName())
+        .status(true)
+        .role(Role.USER)
+        .gameAccountInfo(gameAccountInfo)
+        .build();
+  }
+
   public void updateRefreshToken(String hashedRefreshToken) {
     this.refreshToken = hashedRefreshToken;
+  }
+
+  public void updateMember(
+      MemberRequest memberRequest, String encodedPassword, GameAccountInfo gameAccountInfo) {
+    this.memberId = memberRequest.getMemberId();
+    this.password = encodedPassword;
+    this.name = memberRequest.getName();
+    this.gameAccountInfo = gameAccountInfo;
+  }
+
+  public void updateStatus() {
+    this.status = !this.status;
   }
 }

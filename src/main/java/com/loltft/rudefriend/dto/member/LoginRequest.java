@@ -1,13 +1,14 @@
 package com.loltft.rudefriend.dto.member;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Schema(description = "로그인 요청 객체")
+@Schema(description = "로그인 요청 DTO")
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor

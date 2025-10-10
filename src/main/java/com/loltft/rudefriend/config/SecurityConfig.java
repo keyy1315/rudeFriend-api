@@ -1,11 +1,7 @@
 package com.loltft.rudefriend.config;
 
-import com.loltft.rudefriend.jwt_security.CustomAccessDeniedHandler;
-import com.loltft.rudefriend.jwt_security.JwtAuthenticationEntryPoint;
-import com.loltft.rudefriend.jwt_security.JwtAuthenticationFilter;
-import com.loltft.rudefriend.jwt_security.RefreshTokenFilter;
 import java.util.List;
-import lombok.RequiredArgsConstructor;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -25,6 +21,13 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import com.loltft.rudefriend.jwt_security.CustomAccessDeniedHandler;
+import com.loltft.rudefriend.jwt_security.JwtAuthenticationEntryPoint;
+import com.loltft.rudefriend.jwt_security.JwtAuthenticationFilter;
+import com.loltft.rudefriend.jwt_security.RefreshTokenFilter;
+
+import lombok.RequiredArgsConstructor;
 
 @Configuration
 @EnableWebSecurity
@@ -46,15 +49,15 @@ public class SecurityConfig {
   @Bean
   public AuthenticationProvider authenticationProvider(
       UserDetailsService userDetailsService, PasswordEncoder passwordEncoder) {
-    DaoAuthenticationProvider authenticationProvider =
-        new DaoAuthenticationProvider(userDetailsService);
+    DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider(
+        userDetailsService);
     authenticationProvider.setPasswordEncoder(passwordEncoder);
     return authenticationProvider;
   }
 
   @Bean
-  public AuthenticationManager authenticationManager(AuthenticationConfiguration config)
-      throws Exception {
+  public AuthenticationManager authenticationManager(
+      AuthenticationConfiguration config) throws Exception {
     return config.getAuthenticationManager();
   }
 
@@ -83,20 +86,18 @@ public class SecurityConfig {
         .sessionManagement(
             session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .authorizeHttpRequests(
-            auth ->
-                auth.requestMatchers("/actuator/**")
-                    .permitAll()
-                    .requestMatchers("/api/login")
-                    .permitAll()
-                    .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html")
-                    .permitAll()
-                    .anyRequest()
-                    .authenticated())
+            auth -> auth.requestMatchers("/actuator/**")
+                .permitAll()
+                .requestMatchers("/api/login")
+                .permitAll()
+                .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html")
+                .permitAll()
+                .anyRequest()
+                .authenticated())
         .authenticationProvider(authenticationProvider(userDetailsService, passwordEncoder()))
         .exceptionHandling(
-            e ->
-                e.authenticationEntryPoint(jwtAuthenticationEntryPoint)
-                    .accessDeniedHandler(customAccessDeniedHandler))
+            e -> e.authenticationEntryPoint(jwtAuthenticationEntryPoint)
+                .accessDeniedHandler(customAccessDeniedHandler))
         .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
         .addFilterBefore(refreshTokenFilter, JwtAuthenticationFilter.class);
 

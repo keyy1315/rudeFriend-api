@@ -1,7 +1,18 @@
 package com.loltft.rudefriend.jwt_security;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Date;
+
+import javax.crypto.SecretKey;
+
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
+
 import com.loltft.rudefriend.config.JwtProperties;
-import com.loltft.rudefriend.service.MemberService;
+
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
@@ -12,16 +23,8 @@ import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
-import java.nio.charset.StandardCharsets;
-import java.util.Date;
-import javax.crypto.SecretKey;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 @Slf4j
 @Component
@@ -32,7 +35,6 @@ public class JwtTokenProvider {
   private static final String AUTHORIZATION = "Authorization";
 
   private final JwtProperties jwtProperties;
-  private final MemberService memberService;
 
   private SecretKey getSigningKey() {
     byte[] keyBytes = jwtProperties.getSecret().getBytes(StandardCharsets.UTF_8);
@@ -106,8 +108,8 @@ public class JwtTokenProvider {
       throw new AuthenticationCredentialsNotFoundException("토큰 정보가 없습니다.");
     }
     try {
-      Claims claims =
-          Jwts.parser().verifyWith(getSigningKey()).build().parseSignedClaims(token).getPayload();
+      Claims claims = Jwts.parser().verifyWith(getSigningKey()).build().parseSignedClaims(token)
+          .getPayload();
       return claims.get(jwtProperties.getClaimKey()).toString();
     } catch (Exception e) {
       throw new JwtException(handleJwtExceptionMessage(e));
@@ -124,8 +126,8 @@ public class JwtTokenProvider {
       throw new AuthenticationCredentialsNotFoundException("토큰 정보가 없습니다.");
     }
     try {
-      Claims claims =
-          Jwts.parser().verifyWith(getSigningKey()).build().parseSignedClaims(token).getPayload();
+      Claims claims = Jwts.parser().verifyWith(getSigningKey()).build().parseSignedClaims(token)
+          .getPayload();
       return claims.getSubject();
     } catch (Exception e) {
       throw new JwtException(handleJwtExceptionMessage(e));
@@ -177,15 +179,5 @@ public class JwtTokenProvider {
       }
     }
     return null;
-  }
-
-  /**
-   * RefreshToken 으로 회원 ID를 추출
-   *
-   * @param hashedRefreshToken 해싱 된 refreshToken
-   * @return 회원 ID
-   */
-  public String getMemberIdFromRefreshToken(String hashedRefreshToken) {
-    return memberService.findByRefreshToken(hashedRefreshToken).getMemberId();
   }
 }

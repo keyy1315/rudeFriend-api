@@ -86,32 +86,18 @@ public class MemberController {
   public ResponseEntity<ApiCommonResponse<List<MemberResponse>>> getMemberList(
       @RequestParam(required = false) @Schema(description = "검색어 - 닉네임, 로그인 ID, 게임 이름, 익명 회원 IP 주소") String search,
       @RequestParam(required = false) @Schema(
-          description = "롤/롤체 선택 옵션", allowableValues = {"LOL", "TFT"}) GameSelectOption option,
+          description = "롤(솔랭, 자랭)/롤체(솔랭, 깐부) 선택 옵션") GameSelectOption option,
       @RequestParam(required = false) @Schema(
-          description = "티어 선택 옵션", allowableValues = {
-              "IRON",
-              "SILVER",
-              "GOLD",
-              "BRONZE",
-              "PLATINUM",
-              "EMERALD",
-              "DIAMOND",
-              "MASTER",
-              "GRANDMASTER",
-              "CHALLENGER"
-          }) Tier tier,
+          description = "티어 선택 옵션") Tier tier,
       @RequestParam(required = false) @Schema(
-          description = "해당하는 티어의 이상/이하/같음 조회 선택 옵션", allowableValues = {"EQUAL", "OVER",
-              "UNDER"}) FilterMode filterMode,
+          description = "해당하는 티어의 이상/이하/같음 조회 선택 옵션") FilterMode filterMode,
       @RequestParam(required = false) @Schema(description = "계정 사용 상태") Boolean status,
       @RequestParam(required = false) @Schema(
-          description = "회원 권한", allowableValues = {"USER", "ADMIN", "SUPER",
-              "ANONYMOUS"}) Role role,
+          description = "회원 권한") Role role,
       @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") @Schema(description = "등록일/수정일 시작일") LocalDate dateFrom,
       @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") @Schema(description = "등록일/수정일 종료일") LocalDate dateTo,
       @RequestParam(required = false) @Schema(
-          description = "등록일/수정일 선택 옵션 (create = 등록일 | update = 수정일)", allowableValues = {"CREATE",
-              "UPDATE"}) DateOption dateOption,
+          description = "등록일/수정일 선택 옵션 (create = 등록일 | update = 수정일)") DateOption dateOption,
       @RequestParam(defaultValue = "1") @Schema(description = "현재 페이지") @Min(1) Integer pageNo) {
     List<MemberResponse> result = memberService.getMemberList(
         search, option, tier, filterMode, status, role, dateFrom, dateTo, dateOption, pageNo);

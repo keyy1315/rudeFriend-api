@@ -1,7 +1,13 @@
 package com.loltft.rudefriend.entity.game;
 
+import java.sql.Types;
+import java.util.UUID;
+
+import org.hibernate.annotations.JdbcTypeCode;
+
 import com.loltft.rudefriend.dto.game.GameInfoRequest;
 import com.loltft.rudefriend.entity.enums.Tier;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -9,13 +15,10 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import java.sql.Types;
-import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
-import org.hibernate.annotations.JdbcTypeCode;
 
 @Entity
 @Table(name = "game_account_info")
@@ -45,22 +48,22 @@ public class GameAccountInfo {
 
   @Enumerated(EnumType.STRING)
   @Column
-  @Schema(description = "롤 티어", example = "PLATINUM IV")
+  @Schema(description = "롤 티어", example = "PLATINUM")
   private Tier lolTier;
 
   @Enumerated(EnumType.STRING)
   @Column
-  @Schema(description = "자랭 티어", example = "PLATINUM IV")
+  @Schema(description = "자랭 티어", example = "PLATINUM")
   private Tier flexTier;
 
   @Enumerated(EnumType.STRING)
   @Column
-  @Schema(description = "롤체 티어", example = "MASTER I")
+  @Schema(description = "롤체 티어", example = "MASTER")
   private Tier tftTier;
 
   @Enumerated(EnumType.STRING)
   @Column
-  @Schema(description = "깐부 티어", example = "MASTER I")
+  @Schema(description = "깐부 티어", example = "MASTER")
   private Tier doubleUpTier;
 
   public static GameAccountInfo fromRequest(GameInfoRequest gameInfo) {

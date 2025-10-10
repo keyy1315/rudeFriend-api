@@ -3,6 +3,7 @@ package com.loltft.rudefriend.dto.member;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.loltft.rudefriend.dto.Validation;
 import com.loltft.rudefriend.dto.game.GameInfoRequest;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;

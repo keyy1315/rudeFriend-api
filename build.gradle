@@ -69,5 +69,7 @@ tasks.withType(JavaCompile).configureEach {
 spotless {
     java {
         eclipse().configFile(".idea/code-style/GoogleStyle_copy.xml")
+        importOrder('java', 'javax', 'org', 'com','*')
+        removeUnusedImports()
     }
 }

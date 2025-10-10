@@ -1,14 +1,17 @@
 package com.loltft.rudefriend.config;
 
-import com.loltft.rudefriend.entity.Member;
-import com.loltft.rudefriend.entity.enums.Role;
-import com.loltft.rudefriend.repository.member.MemberRepository;
 import java.util.UUID;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+
+import com.loltft.rudefriend.entity.Member;
+import com.loltft.rudefriend.entity.enums.Role;
+import com.loltft.rudefriend.repository.member.MemberRepository;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Component
 @Slf4j

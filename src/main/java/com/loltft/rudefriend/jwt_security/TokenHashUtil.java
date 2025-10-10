@@ -1,13 +1,17 @@
 package com.loltft.rudefriend.jwt_security;
 
-import com.loltft.rudefriend.config.JwtProperties;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
+
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
-import lombok.RequiredArgsConstructor;
+
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
+
+import com.loltft.rudefriend.config.JwtProperties;
+
+import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor

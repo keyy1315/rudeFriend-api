@@ -1,10 +1,12 @@
 package com.loltft.rudefriend.dto.game;
 
+import java.util.UUID;
+
 import com.loltft.rudefriend.dto.Validation;
 import com.loltft.rudefriend.entity.enums.Tier;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
-import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

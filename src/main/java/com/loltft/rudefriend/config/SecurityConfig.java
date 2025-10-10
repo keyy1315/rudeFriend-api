@@ -1,11 +1,7 @@
 package com.loltft.rudefriend.config;
 
-import com.loltft.rudefriend.jwt_security.CustomAccessDeniedHandler;
-import com.loltft.rudefriend.jwt_security.JwtAuthenticationEntryPoint;
-import com.loltft.rudefriend.jwt_security.JwtAuthenticationFilter;
-import com.loltft.rudefriend.jwt_security.RefreshTokenFilter;
 import java.util.List;
-import lombok.RequiredArgsConstructor;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -25,6 +21,13 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import com.loltft.rudefriend.jwt_security.CustomAccessDeniedHandler;
+import com.loltft.rudefriend.jwt_security.JwtAuthenticationEntryPoint;
+import com.loltft.rudefriend.jwt_security.JwtAuthenticationFilter;
+import com.loltft.rudefriend.jwt_security.RefreshTokenFilter;
+
+import lombok.RequiredArgsConstructor;
 
 @Configuration
 @EnableWebSecurity

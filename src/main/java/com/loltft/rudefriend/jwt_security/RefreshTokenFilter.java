@@ -1,19 +1,7 @@
 package com.loltft.rudefriend.jwt_security;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.loltft.rudefriend.dto.ApiCommonResponse;
-import com.loltft.rudefriend.service.AuthService;
-import com.loltft.rudefriend.service.CustomUserDetailService;
-import com.loltft.rudefriend.service.MemberService;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.JwtException;
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.security.authentication.AccountStatusUserDetailsChecker;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -21,6 +9,21 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.loltft.rudefriend.dto.ApiCommonResponse;
+import com.loltft.rudefriend.service.AuthService;
+import com.loltft.rudefriend.service.CustomUserDetailService;
+import com.loltft.rudefriend.service.MemberService;
+
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Component
 @RequiredArgsConstructor
@@ -81,6 +84,7 @@ public class RefreshTokenFilter extends OncePerRequestFilter {
 
       log.error("유효하지 않은 Refresh Token : {}", e.getMessage());
       handleResponseMessage(response, errorMessage);
+      return;
     }
 
     String hashedToken = tokenHashUtil.hashToken(refreshToken);

@@ -1,12 +1,14 @@
 package com.loltft.rudefriend.dto.member;
 
+import java.time.LocalDateTime;
+import java.util.UUID;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.loltft.rudefriend.entity.Member;
 import com.loltft.rudefriend.entity.enums.Role;
 import com.loltft.rudefriend.entity.game.GameAccountInfo;
+
 import io.swagger.v3.oas.annotations.media.Schema;
-import java.time.LocalDateTime;
-import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

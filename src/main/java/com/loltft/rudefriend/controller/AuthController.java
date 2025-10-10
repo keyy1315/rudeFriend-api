@@ -1,13 +1,5 @@
 package com.loltft.rudefriend.controller;
 
-import com.loltft.rudefriend.dto.ApiCommonResponse;
-import com.loltft.rudefriend.dto.member.LoginRequest;
-import com.loltft.rudefriend.dto.member.MemberResponse;
-import com.loltft.rudefriend.service.AuthService;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -18,6 +10,16 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.loltft.rudefriend.dto.ApiCommonResponse;
+import com.loltft.rudefriend.dto.member.LoginRequest;
+import com.loltft.rudefriend.dto.member.MemberResponse;
+import com.loltft.rudefriend.service.AuthService;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 
 @Tag(name = "인증/인가 API", description = "로그인 및 토큰 재발급 등 인증/인가에 관련된 기능 API")
 @RestController

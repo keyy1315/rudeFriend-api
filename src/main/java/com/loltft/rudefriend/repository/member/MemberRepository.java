@@ -1,9 +1,11 @@
 package com.loltft.rudefriend.repository.member;
 
-import com.loltft.rudefriend.entity.Member;
 import java.util.Optional;
 import java.util.UUID;
+
 import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.loltft.rudefriend.entity.Member;
 
 public interface MemberRepository extends JpaRepository<Member, UUID>, MemberRepositoryCustom {
 

@@ -1,28 +1,16 @@
-package com.loltft.rudefriend.config;
+package com.loltft.rudefriend.config
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import org.springframework.boot.context.properties.ConfigurationProperties
 
-import lombok.Getter;
-
-@Component
-@Getter
-public class JwtProperties {
-
-  @Value("${jwt.secret}")
-  private String secret;
-
-  @Value("${jwt.hash-secret}")
-  private String hashSecret;
-
-  private final long expiration = 86400000; // 24H
-  private final long refreshExpiration = 86400000 * 7; // 7Day
-
-  private final String accessTokenSubject = "access_token";
-  private final String refreshTokenSubject = "refresh_token";
-
-  private final String claimKey = "memberId";
-
-  private final String accessHeaderName = "AccessToken";
-  private final String refreshCookieKey = "RefreshToken";
-}
+@ConfigurationProperties(prefix = "jwt")
+data class JwtProperties(
+    val secret: String,
+    val hashSecret: String,
+    val expiration: Long = 86_400_000, // 24H
+    val refreshExpiration: Long = 604_800_000, // 7Day
+    val accessTokenSubject: String = "access_token",
+    val refreshTokenSubject: String = "refresh_token",
+    val claimKey: String = "memberId",
+    val accessHeaderName: String = "AccessToken",
+    val refreshCookieKey: String = "RefreshToken"
+)

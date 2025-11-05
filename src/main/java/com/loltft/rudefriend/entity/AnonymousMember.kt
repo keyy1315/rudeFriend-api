@@ -24,9 +24,9 @@ class AnonymousMember {
     @JdbcTypeCode(Types.BINARY)
     @Column(columnDefinition = "BINARY(16)")
     @Schema(description = "익명 회원 PK")
-    private var id: UUID? = null
+    var id: UUID? = null
 
     @Column
     @Schema(description = "익명 회원 IP 주소")
-    private var ipAddress: String? = null
+    var ipAddress: String? = null
 }

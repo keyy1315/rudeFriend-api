@@ -26,42 +26,42 @@ class Member : BaseEntity() {
     @JdbcTypeCode(Types.BINARY)
     @Column(columnDefinition = "BINARY(16)")
     @Schema(description = "회원 PK")
-    private var id: UUID? = null
+    var id: UUID? = null
 
     @Column(nullable = false, unique = true)
     @Schema(description = "회원 로그인 ID")
-    private var memberId: String? = null
+    var memberId: String? = null
 
     @Column(nullable = false)
     @Schema(description = "회원 비밀번호", accessMode = Schema.AccessMode.WRITE_ONLY)
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    private var password: String? = null
+    var password: String? = null
 
     @Column(nullable = false)
     @Schema(description = "사용 상태")
-    private var status: Boolean? = null
+    var status: Boolean? = null
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     @Schema(description = "계정 권한 (USER, ADMIN, SUPER)")
-    private var role: Role? = null
+    var role: Role? = null
 
     @Column(unique = true)
     @Schema(description = "닉네임")
-    private var name: String? = null
+    var name: String? = null
 
     @Column
     @Schema(description = "Refresh 토큰 정보")
-    private var refreshToken: String? = null
+    var refreshToken: String? = null
 
     @Schema(description = "게임 계정 정보")
     @OneToOne(fetch = FetchType.LAZY)
-    private var gameAccountInfo: GameAccountInfo? = null
+    var gameAccountInfo: GameAccountInfo? = null
 
     @ManyToOne(fetch = FetchType.LAZY)
     @LastModifiedBy
     @Schema(description = "마지막 수정자 ID")
-    private var updatedBy: Member? = null
+    var updatedBy: Member? = null
 
     fun updateRefreshToken(hashedRefreshToken: String?) {
         this.refreshToken = hashedRefreshToken
@@ -70,9 +70,9 @@ class Member : BaseEntity() {
     fun updateMember(
         memberRequest: MemberRequest, encodedPassword: String?, gameAccountInfo: GameAccountInfo?
     ) {
-        this.memberId = memberRequest.getMemberId()
+        this.memberId = memberRequest.memberId
         this.password = encodedPassword
-        this.name = memberRequest.getName()
+        this.name = memberRequest.name
         this.gameAccountInfo = gameAccountInfo
     }
 
@@ -89,9 +89,9 @@ class Member : BaseEntity() {
         ): Member {
             return Member().apply {
                 id = UUID.randomUUID()
-                memberId = memberRequest.getMemberId()
+                memberId = memberRequest.memberId
                 password = encodedPassword
-                name = memberRequest.getName()
+                name = memberRequest.name
                 status = true
                 role = Role.USER
                 gameAccountInfo = gameAccountInfoData

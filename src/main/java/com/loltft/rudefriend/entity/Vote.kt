@@ -28,24 +28,24 @@ class Vote {
     @JdbcTypeCode(Types.BINARY)
     @Column(columnDefinition = "BINARY(16)")
     @Schema(description = "Vote PK")
-    private var id: UUID? = null
+    var id: UUID? = null
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "board_id")
     @Schema(description = "투표 게시글")
-    private var board: Board? = null
+    var board: Board? = null
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     @Schema(description = "로그인한 사용자")
-    private var member: Member? = null
+    var member: Member? = null
 
     @Column
     @Schema(description = "익명 사용자 IP 주소")
-    private var ipAddress: String? = null
+    var ipAddress: String? = null
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     @Schema(description = "투표 타입 (UP, DOWN)")
-    private var voteType: VoteType? = null
+    var voteType: VoteType? = null
 }

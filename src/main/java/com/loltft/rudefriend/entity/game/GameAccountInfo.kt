@@ -70,5 +70,18 @@ class GameAccountInfo {
                 id = gameInfoRequest.gameAccountId
             }
         }
+
+        fun from(gameInfo: GameAccountInfo): GameAccountInfo {
+            return GameAccountInfo().apply {
+                gameName = gameInfo.gameName
+                tagLine = gameInfo.tagLine
+                iconUrl = gameInfo.iconUrl
+                lolTier = gameInfo.lolTier
+                flexTier = gameInfo.flexTier
+                doubleUpTier = gameInfo.doubleUpTier
+                tftTier = gameInfo.tftTier
+                id = gameInfo.id
+            }
+        }
     }
 }

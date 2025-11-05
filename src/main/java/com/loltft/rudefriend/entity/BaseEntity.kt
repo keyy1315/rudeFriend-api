@@ -23,11 +23,11 @@ open class BaseEntity {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Schema(description = "생성 일시")
     @Column(nullable = false, updatable = false)
-    private var createdAt: LocalDateTime? = null
+    var createdAt: LocalDateTime? = null
 
     @LastModifiedDate
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Schema(description = "수정 일시")
     @Column(insertable = false)
-    private var updatedAt: LocalDateTime? = null
+    var updatedAt: LocalDateTime? = null
 }

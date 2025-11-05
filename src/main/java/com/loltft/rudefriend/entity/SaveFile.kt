@@ -22,19 +22,19 @@ import java.time.LocalDateTime
 class SaveFile {
     @Id
     @Schema(description = "extension 포함 된 저장된 파일명")
-    private var fileUuid: String? = null
+    var fileUuid: String? = null
 
     @Column
     @Schema(description = "원본 파일명")
-    private var originalFileName: String? = null
+    var originalFileName: String? = null
 
     @CreatedDate
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Schema(description = "업로드 일시")
-    private var uploadDateTime: LocalDateTime? = null
+    var uploadDateTime: LocalDateTime? = null
 
     @CreatedBy
     @Schema(description = "업로더")
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    private var uploader: Member? = null
+    var uploader: Member? = null
 }

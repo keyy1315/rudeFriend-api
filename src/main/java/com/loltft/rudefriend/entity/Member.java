@@ -4,6 +4,7 @@ import java.sql.Types;
 import java.util.UUID;
 
 import org.hibernate.annotations.JdbcTypeCode;
+import org.springframework.data.annotation.LastModifiedBy;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.loltft.rudefriend.dto.member.MemberRequest;
@@ -18,6 +19,7 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -68,6 +70,11 @@ public class Member extends BaseEntity {
   @Schema(description = "게임 계정 정보")
   @OneToOne(fetch = FetchType.LAZY)
   private GameAccountInfo gameAccountInfo;
+
+  @ManyToOne(fetch = FetchType.LAZY)
+  @LastModifiedBy
+  @Schema(description = "마지막 수정자 ID")
+  private Member updatedBy;
 
   public static Member fromRequest(
       MemberRequest memberRequest, String encodedPassword, GameAccountInfo gameAccountInfo) {

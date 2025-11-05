@@ -19,6 +19,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.loltft.rudefriend.config.JwtProperties;
 import com.loltft.rudefriend.dto.ApiCommonResponse;
+import com.loltft.rudefriend.service.AnonymousMemberService;
 import com.loltft.rudefriend.service.CustomUserDetailService;
 
 import io.jsonwebtoken.JwtException;
@@ -38,6 +39,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
   private final CustomUserDetailService customUserDetailService;
   private final JwtProperties jwtProperties;
   private final ObjectMapper objectMapper;
+  private final AnonymousMemberService anonymousMemberService;
 
   @Override
   protected void doFilterInternal(
@@ -64,11 +66,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
           SecurityContextHolder.getContext().setAuthentication(authenticationToken);
         }
       } else {
+        String anonymousIpAddress = request.getRemoteAddr();
         List<GrantedAuthority> grantedAuthorities = List.of(new SimpleGrantedAuthority(
             "ROLE_ANONYMOUS"));
         Authentication anonymousAuthentication = new AnonymousAuthenticationToken("ANONYMOUS",
-            "anonymous", grantedAuthorities);
+            anonymousIpAddress, grantedAuthorities);
         SecurityContextHolder.getContext().setAuthentication(anonymousAuthentication);
+        anonymousMemberService.saveAnonymousMember(anonymousIpAddress);
       }
     } catch (JwtException e) {
       log.error("JWT 필터 JwtException : {}", e.getMessage(), e);

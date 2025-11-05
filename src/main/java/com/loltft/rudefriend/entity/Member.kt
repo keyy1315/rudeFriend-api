@@ -17,52 +17,47 @@ import java.util.*
 
 @Entity
 @Table(name = "member")
-@Getter
-@NoArgsConstructor
-@AllArgsConstructor
-@SuperBuilder
-class Member : BaseEntity() {
+class Member(
     @Id
     @JdbcTypeCode(Types.BINARY)
     @Column(columnDefinition = "BINARY(16)")
     @Schema(description = "회원 PK")
-    var id: UUID? = null
+    var id: UUID? = null,
 
     @Column(nullable = false, unique = true)
     @Schema(description = "회원 로그인 ID")
-    var memberId: String? = null
-
+    var memberId: String? = null,
     @Column(nullable = false)
     @Schema(description = "회원 비밀번호", accessMode = Schema.AccessMode.WRITE_ONLY)
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    var password: String? = null
+    var password: String? = null,
 
     @Column(nullable = false)
     @Schema(description = "사용 상태")
-    var status: Boolean? = null
+    var status: Boolean? = null,
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     @Schema(description = "계정 권한 (USER, ADMIN, SUPER)")
-    var role: Role? = null
+    var role: Role? = null,
 
     @Column(unique = true)
     @Schema(description = "닉네임")
-    var name: String? = null
+    var name: String? = null,
 
     @Column
     @Schema(description = "Refresh 토큰 정보")
-    var refreshToken: String? = null
+    var refreshToken: String? = null,
 
     @Schema(description = "게임 계정 정보")
     @OneToOne(fetch = FetchType.LAZY)
-    var gameAccountInfo: GameAccountInfo? = null
+    var gameAccountInfo: GameAccountInfo? = null,
 
     @ManyToOne(fetch = FetchType.LAZY)
     @LastModifiedBy
     @Schema(description = "마지막 수정자 ID")
     var updatedBy: Member? = null
-
+) : BaseEntity() {
     fun updateRefreshToken(hashedRefreshToken: String?) {
         this.refreshToken = hashedRefreshToken
     }
@@ -100,3 +95,4 @@ class Member : BaseEntity() {
         }
     }
 }
+

@@ -14,27 +14,23 @@ import java.time.LocalDateTime
 
 @Entity
 @Table(name = "save_file")
-@Getter
-@Builder(toBuilder = true)
-@AllArgsConstructor
-@NoArgsConstructor
 @EntityListeners(AuditingEntityListener::class)
-class SaveFile {
+class SaveFile(
     @Id
     @Schema(description = "extension 포함 된 저장된 파일명")
-    var fileUuid: String? = null
+    var fileUuid: String? = null,
 
     @Column
     @Schema(description = "원본 파일명")
-    var originalFileName: String? = null
+    var originalFileName: String? = null,
 
     @CreatedDate
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Schema(description = "업로드 일시")
-    var uploadDateTime: LocalDateTime? = null
+    var uploadDateTime: LocalDateTime? = null,
 
     @CreatedBy
     @Schema(description = "업로더")
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     var uploader: Member? = null
-}
+)

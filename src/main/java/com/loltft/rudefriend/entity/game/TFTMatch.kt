@@ -15,10 +15,6 @@ import java.util.*
 
 @Entity
 @Table(name = "tft_match")
-@Getter
-@NoArgsConstructor
-@AllArgsConstructor
-@SuperBuilder
 class TFTMatch {
     @Id
     @JdbcTypeCode(Types.BINARY)

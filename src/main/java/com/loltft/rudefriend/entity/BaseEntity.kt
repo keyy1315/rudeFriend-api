@@ -15,19 +15,16 @@ import java.time.LocalDateTime
 
 @EntityListeners(AuditingEntityListener::class)
 @MappedSuperclass
-@Getter
-@SuperBuilder(toBuilder = true)
-@NoArgsConstructor
-open class BaseEntity {
+open class BaseEntity(
     @CreatedDate
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Schema(description = "생성 일시")
     @Column(nullable = false, updatable = false)
-    var createdAt: LocalDateTime? = null
+    var createdAt: LocalDateTime? = null,
 
     @LastModifiedDate
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Schema(description = "수정 일시")
     @Column(insertable = false)
     var updatedAt: LocalDateTime? = null
-}
+)

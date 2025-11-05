@@ -15,18 +15,14 @@ import java.util.*
 
 @Entity
 @Table(name = "anonymous_member")
-@Getter
-@NoArgsConstructor
-@AllArgsConstructor
-@SuperBuilder
-class AnonymousMember {
+class AnonymousMember(
     @Id
     @JdbcTypeCode(Types.BINARY)
     @Column(columnDefinition = "BINARY(16)")
     @Schema(description = "익명 회원 PK")
-    var id: UUID? = null
+    var id: UUID? = null,
 
     @Column
     @Schema(description = "익명 회원 IP 주소")
     var ipAddress: String? = null
-}
+)

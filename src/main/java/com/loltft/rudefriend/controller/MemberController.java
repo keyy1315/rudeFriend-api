@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.loltft.rudefriend.dto.ApiCommonResponse;
 import com.loltft.rudefriend.dto.enums.DateOption;
 import com.loltft.rudefriend.dto.enums.FilterMode;
-import com.loltft.rudefriend.dto.enums.GameSelectOption;
+import com.loltft.rudefriend.dto.enums.GameType;
 import com.loltft.rudefriend.dto.member.MemberRequest;
 import com.loltft.rudefriend.dto.member.MemberResponse;
 import com.loltft.rudefriend.entity.enums.Role;
@@ -89,7 +89,7 @@ public class MemberController {
   public ResponseEntity<ApiCommonResponse<List<MemberResponse>>> getMemberList(
       @RequestParam(required = false) @Schema(description = "검색어 - 닉네임, 로그인 ID, 게임 이름, 익명 회원 IP 주소") String search,
       @RequestParam(required = false) @Schema(
-          description = "롤(솔랭, 자랭)/롤체(솔랭, 깐부) 선택 옵션") GameSelectOption option,
+          description = "롤(솔랭, 자랭)/롤체(솔랭, 깐부) 선택 옵션") GameType option,
       @RequestParam(required = false) @Schema(
           description = "티어 선택 옵션") Tier tier,
       @RequestParam(required = false) @Schema(
@@ -114,7 +114,7 @@ public class MemberController {
   public ResponseEntity<ApiCommonResponse<Integer>> getMemberListTotal(
       @RequestParam(required = false) @Schema(description = "검색어 - 닉네임, 로그인 ID, 게임 이름, 익명 회원 IP 주소") String search,
       @RequestParam(required = false) @Schema(
-          description = "롤(솔랭, 자랭)/롤체(솔랭, 깐부) 선택 옵션") GameSelectOption option,
+          description = "롤(솔랭, 자랭)/롤체(솔랭, 깐부) 선택 옵션") GameType option,
       @RequestParam(required = false) @Schema(
           description = "티어 선택 옵션") Tier tier,
       @RequestParam(required = false) @Schema(

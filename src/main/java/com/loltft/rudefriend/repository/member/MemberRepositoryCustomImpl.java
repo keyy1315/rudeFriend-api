@@ -11,7 +11,7 @@ import org.springframework.util.StringUtils;
 
 import com.loltft.rudefriend.dto.enums.DateOption;
 import com.loltft.rudefriend.dto.enums.FilterMode;
-import com.loltft.rudefriend.dto.enums.GameSelectOption;
+import com.loltft.rudefriend.dto.enums.GameType;
 import com.loltft.rudefriend.dto.member.MemberResponse;
 import com.loltft.rudefriend.entity.QMember;
 import com.loltft.rudefriend.entity.enums.Role;
@@ -55,7 +55,7 @@ public class MemberRepositoryCustomImpl implements MemberRepositoryCustom {
    */
   private JPAQuery<MemberResponse> setSearchFilter(
       String search,
-      GameSelectOption option,
+      GameType option,
       Tier tier,
       FilterMode filterMode,
       Boolean status,
@@ -184,7 +184,7 @@ public class MemberRepositoryCustomImpl implements MemberRepositoryCustom {
   @Override
   public List<MemberResponse> findAllByOption(
       String search,
-      GameSelectOption option,
+      GameType option,
       Tier tier,
       FilterMode filterMode,
       Boolean status,
@@ -205,7 +205,7 @@ public class MemberRepositoryCustomImpl implements MemberRepositoryCustom {
   @Override
   public Long countAllByOption(
       String search,
-      GameSelectOption option,
+      GameType option,
       Tier tier,
       FilterMode filterMode,
       Boolean status,

@@ -1,24 +1,16 @@
-package com.loltft.rudefriend.entity.game;
+package com.loltft.rudefriend.entity.game
 
-import java.sql.Types;
-import java.util.UUID;
-
-import org.hibernate.annotations.JdbcTypeCode;
-
-import com.loltft.rudefriend.dto.game.GameInfoRequest;
-import com.loltft.rudefriend.entity.enums.Tier;
-
-import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.experimental.SuperBuilder;
+import com.loltft.rudefriend.dto.game.GameInfoRequest
+import com.loltft.rudefriend.entity.enums.Tier
+import io.swagger.v3.oas.annotations.media.Schema
+import jakarta.persistence.*
+import lombok.AllArgsConstructor
+import lombok.Getter
+import lombok.NoArgsConstructor
+import lombok.experimental.SuperBuilder
+import org.hibernate.annotations.JdbcTypeCode
+import java.sql.Types
+import java.util.*
 
 @Entity
 @Table(name = "game_account_info")
@@ -26,69 +18,57 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
-public class GameAccountInfo {
+class GameAccountInfo {
+    @Id
+    @JdbcTypeCode(Types.BINARY)
+    @Column(columnDefinition = "BINARY(16)")
+    @Schema(description = "라이엇 계정 puuid")
+    private var id: UUID? = null
 
-  @Id
-  @JdbcTypeCode(Types.BINARY)
-  @Column(columnDefinition = "BINARY(16)")
-  @Schema(description = "라이엇 계정 puuid")
-  private UUID id;
+    @Column
+    @Schema(description = "계정 이름", example = "무례한 친구")
+    private var gameName: String? = null
 
-  @Column
-  @Schema(description = "계정 이름", example = "무례한 친구")
-  private String gameName;
+    @Column
+    @Schema(description = "계정 태그", example = "0129")
+    private var tagLine: String? = null
 
-  @Column
-  @Schema(description = "계정 태그", example = "0129")
-  private String tagLine;
+    @Column
+    @Schema(description = "아이콘 이미지 URL")
+    private var iconUrl: String? = null
 
-  @Column
-  @Schema(description = "아이콘 이미지 URL")
-  private String iconUrl;
+    @Enumerated(EnumType.STRING)
+    @Column
+    @Schema(description = "롤 티어", example = "PLATINUM")
+    private var lolTier: Tier? = null
 
-  @Enumerated(EnumType.STRING)
-  @Column
-  @Schema(description = "롤 티어", example = "PLATINUM")
-  private Tier lolTier;
+    @Enumerated(EnumType.STRING)
+    @Column
+    @Schema(description = "자랭 티어", example = "PLATINUM")
+    private var flexTier: Tier? = null
 
-  @Enumerated(EnumType.STRING)
-  @Column
-  @Schema(description = "자랭 티어", example = "PLATINUM")
-  private Tier flexTier;
+    @Enumerated(EnumType.STRING)
+    @Column
+    @Schema(description = "롤체 티어", example = "MASTER")
+    private var tftTier: Tier? = null
 
-  @Enumerated(EnumType.STRING)
-  @Column
-  @Schema(description = "롤체 티어", example = "MASTER")
-  private Tier tftTier;
+    @Enumerated(EnumType.STRING)
+    @Column
+    @Schema(description = "깐부 티어", example = "MASTER")
+    private var doubleUpTier: Tier? = null
 
-  @Enumerated(EnumType.STRING)
-  @Column
-  @Schema(description = "깐부 티어", example = "MASTER")
-  private Tier doubleUpTier;
-
-  public static GameAccountInfo fromRequest(GameInfoRequest gameInfo) {
-    return GameAccountInfo.builder()
-        .id(gameInfo.getGameAccountId())
-        .gameName(gameInfo.getGameName())
-        .tagLine(gameInfo.getTagLine())
-        .iconUrl(gameInfo.getIconUrl())
-        .lolTier(gameInfo.getLolTier())
-        .flexTier(gameInfo.getFlexTier())
-        .tftTier(gameInfo.getTftTier())
-        .doubleUpTier(gameInfo.getDoubleUpTier())
-        .build();
-  }
-
-  public static GameAccountInfo fromMember(GameAccountInfo gameInfo) {
-    return GameAccountInfo.builder()
-        .id(gameInfo.getId())
-        .gameName(gameInfo.getGameName())
-        .tagLine(gameInfo.getTagLine())
-        .iconUrl(gameInfo.getIconUrl())
-        .lolTier(gameInfo.getLolTier())
-        .flexTier(gameInfo.getFlexTier())
-        .tftTier(gameInfo.getTftTier())
-        .doubleUpTier(gameInfo.getDoubleUpTier())
-        .build();
-  }
+    companion object {
+        fun fromRequest(gameInfoRequest: GameInfoRequest): GameAccountInfo {
+            return GameAccountInfo().apply {
+                gameName = gameInfoRequest.gameName
+                tagLine = gameInfoRequest.tagLine
+                iconUrl = gameInfoRequest.iconUrl
+                lolTier = gameInfoRequest.lolTier
+                flexTier = gameInfoRequest.flexTier
+                doubleUpTier = gameInfoRequest.doubleUpTier
+                tftTier = gameInfoRequest.tftTier
+                id = gameInfoRequest.gameAccountId
+            }
+        }
+    }
 }

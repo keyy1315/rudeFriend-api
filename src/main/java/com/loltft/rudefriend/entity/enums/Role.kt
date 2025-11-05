@@ -1,5 +1,5 @@
-package com.loltft.rudefriend.entity.enums;
+package com.loltft.rudefriend.entity.enums
 
-public enum Role {
-  USER, ADMIN, SUPER, ANONYMOUS;
+enum class Role {
+    USER, ADMIN, SUPER, ANONYMOUS
 }

@@ -1,5 +1,5 @@
-package com.loltft.rudefriend.entity.enums;
+package com.loltft.rudefriend.entity.enums
 
-public enum VoteType {
-  LEFT, RIGHT
+enum class VoteType {
+    LEFT, RIGHT
 }

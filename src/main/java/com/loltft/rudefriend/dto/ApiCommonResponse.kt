@@ -1,69 +1,71 @@
-package com.loltft.rudefriend.dto;
+package com.loltft.rudefriend.dto
 
-import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude
+import io.swagger.v3.oas.annotations.media.Schema
+import lombok.AllArgsConstructor
+import lombok.Builder
+import lombok.Getter
+import lombok.RequiredArgsConstructor
 
-import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-
-@Builder
 @AllArgsConstructor
 @Getter
 @Schema(description = "API 공통 응답 구조")
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class ApiCommonResponse<T> {
+data class ApiCommonResponse<T>(
+    @Schema(description = "응답 상태")
+    val status: String? = null,
 
-  @Schema(description = "응답 상태")
-  private final String status;
+    @Schema(description = "응답 메세지", example = "상세 데이터 조회 성공")
+    val message: String? = null,
 
-  @Schema(description = "응답 메세지", example = "상세 데이터 조회 성공")
-  private final String message;
+    @Schema(description = "응답 데이터")
+    val result: ApiResult<T?>? = null
+) {
+    companion object {
+        private const val OK = "ok"
+        private const val FAIL = "fail"
 
-  @Schema(description = "응답 데이터")
-  private final ApiResult<T> result;
+        /**
+         * 단일 성공 응답
+         *
+         * @param message 응답 메세지
+         * @param data    응답 데이터
+         * @return 단일 데이터만 존재하는 공통 응답 객체
+         */
+        fun <T> ok(message: String?, data: T?): ApiCommonResponse<T?>? {
+            return ApiCommonResponse(
+                status = OK,
+                message = message,
+                result = ApiResult.of(data)
+            )
+        }
 
-  public ApiCommonResponse() {
-    this.status = null;
-    this.message = null;
-    this.result = null;
-  }
+        /**
+         * 성공 응답
+         *
+         * @param message 응답 메세지
+         * @return 메세지만 존재하는 공통 응답 객체
+         */
+        @JvmStatic
+        fun <T> ok(message: String?): ApiCommonResponse<T?>? {
+            return ApiCommonResponse(
+                status = OK,
+                message = message,
+            )
+        }
 
-  private static final String OK = "ok";
-  private static final String FAIL = "fail";
-
-  /**
-   * 단일 성공 응답
-   *
-   * @param message 응답 메세지
-   * @param data    응답 데이터
-   * @return 단일 데이터만 존재하는 공통 응답 객체
-   */
-  public static <T> ApiCommonResponse<T> ok(String message, T data) {
-    return ApiCommonResponse.<T>builder()
-        .status(OK)
-        .message(message)
-        .result(ApiResult.of(data))
-        .build();
-  }
-
-  /**
-   * 성공 응답
-   *
-   * @param message 응답 메세지
-   * @return 메세지만 존재하는 공통 응답 객체
-   */
-  public static <T> ApiCommonResponse<T> ok(String message) {
-    return ApiCommonResponse.<T>builder().status(OK).message(message).build();
-  }
-
-  /**
-   * 실패 응답
-   *
-   * @param message 응답 메세지
-   * @return 메세지만 존재하는 공통 응답 객체
-   */
-  public static <T> ApiCommonResponse<T> fail(String message) {
-    return ApiCommonResponse.<T>builder().status(FAIL).message(message).build();
-  }
+        /**
+         * 실패 응답
+         *
+         * @param message 응답 메세지
+         * @return 메세지만 존재하는 공통 응답 객체
+         */
+        @JvmStatic
+        fun <T> fail(message: String?): ApiCommonResponse<T?>? {
+            return ApiCommonResponse(
+                status = FAIL,
+                message = message,
+            )
+        }
+    }
 }

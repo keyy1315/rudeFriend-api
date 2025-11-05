@@ -1,5 +1,5 @@
-package com.loltft.rudefriend.dto.enums;
+package com.loltft.rudefriend.dto.enums
 
-public enum GameType {
-  LOL, TFT, DOUBLE_UP, FLEX
+enum class GameType {
+    LOL, TFT, DOUBLE_UP, FLEX
 }

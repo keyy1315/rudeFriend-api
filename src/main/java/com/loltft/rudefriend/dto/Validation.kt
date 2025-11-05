@@ -1,10 +1,7 @@
-package com.loltft.rudefriend.dto;
+package com.loltft.rudefriend.dto
 
-public class Validation {
+class Validation {
+    interface CREATE
 
-  public interface CREATE {
-  }
-
-  public interface UPDATE {
-  }
+    interface UPDATE
 }

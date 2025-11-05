@@ -1,5 +1,5 @@
-package com.loltft.rudefriend.dto.enums;
+package com.loltft.rudefriend.dto.enums
 
-public enum FilterMode {
-  EQUAL, OVER, UNDER
+enum class FilterMode {
+    EQUAL, OVER, UNDER
 }

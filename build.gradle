@@ -1,7 +1,9 @@
 plugins {
-    id 'java'
     id 'org.springframework.boot' version '3.5.6'
     id 'io.spring.dependency-management' version '1.1.7'
+    id 'org.jetbrains.kotlin.jvm' version '2.0.21'
+    id 'org.jetbrains.kotlin.plugin.spring' version '2.0.21'
+    id 'org.jetbrains.kotlin.plugin.jpa' version '2.0.21'
     id 'com.diffplug.spotless' version '6.23.0'
 }
 
@@ -26,6 +28,9 @@ repositories {
 }
 
 dependencies {
+    implementation 'org.jetbrains.kotlin:kotlin-reflect'
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8'
+
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
     implementation 'org.springframework.boot:spring-boot-starter-security'
@@ -38,14 +43,14 @@ dependencies {
     testImplementation 'org.springframework.security:spring-security-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
-    // flyway - DB Migration
+    // Flyway
     implementation 'org.flywaydb:flyway-core'
     implementation 'org.flywaydb:flyway-mysql'
 
-    // Swagger (SpringDoc OpenAPI) dependencies
+    // Swagger
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.9'
 
-    // JWT dependencies
+    // JWT
     implementation 'io.jsonwebtoken:jjwt-api:0.12.5'
     runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.5'
     runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.5'
@@ -64,9 +69,8 @@ tasks.named('test') {
     useJUnitPlatform()
 }
 
-
 tasks.withType(JavaCompile).configureEach {
-    dependsOn("spotlessApply") // 컴파일 전에 자동 포맷팅
+    dependsOn("spotlessApply")
 }
 
 spotless {

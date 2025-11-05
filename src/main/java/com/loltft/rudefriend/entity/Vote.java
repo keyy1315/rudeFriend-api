@@ -1,7 +1,12 @@
 package com.loltft.rudefriend.entity;
 
+import java.sql.Types;
+import java.util.UUID;
+
+import org.hibernate.annotations.JdbcTypeCode;
 
 import com.loltft.rudefriend.entity.enums.VoteType;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -13,17 +18,14 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
-import java.sql.Types;
-import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
-import org.hibernate.annotations.JdbcTypeCode;
 
 @Entity
-@Table(name = "vote",
-    uniqueConstraints = {
+@Table(
+    name = "vote", uniqueConstraints = {
         @UniqueConstraint(columnNames = {"board_id", "member_id"}),
         @UniqueConstraint(columnNames = {"board_id", "ip_address"})
     })

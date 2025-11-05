@@ -9,5 +9,4 @@ class RudeFriendApiApplicationTests {
   @Test
   void contextLoads() {
   }
-
 }

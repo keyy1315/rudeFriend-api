@@ -5,7 +5,7 @@ import java.util.List;
 
 import com.loltft.rudefriend.dto.enums.DateOption;
 import com.loltft.rudefriend.dto.enums.FilterMode;
-import com.loltft.rudefriend.dto.enums.GameSelectOption;
+import com.loltft.rudefriend.dto.enums.GameType;
 import com.loltft.rudefriend.dto.member.MemberResponse;
 import com.loltft.rudefriend.entity.enums.Role;
 import com.loltft.rudefriend.entity.enums.Tier;
@@ -30,7 +30,7 @@ public interface MemberRepositoryCustom {
    */
   List<MemberResponse> findAllByOption(
       String search,
-      GameSelectOption option,
+      GameType option,
       Tier tier,
       FilterMode filterMode,
       Boolean status,
@@ -58,7 +58,7 @@ public interface MemberRepositoryCustom {
    */
   Long countAllByOption(
       String search,
-      GameSelectOption option,
+      GameType option,
       Tier tier,
       FilterMode filterMode,
       Boolean status,

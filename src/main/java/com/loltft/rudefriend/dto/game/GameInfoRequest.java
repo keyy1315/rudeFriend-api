@@ -11,7 +11,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Schema(description = "라이엇 계정 연동 요청 객체")
+@Schema(description = "라이엇 계정 연동 요청 DTO")
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor

@@ -17,7 +17,7 @@ import org.springframework.util.StringUtils;
 
 import com.loltft.rudefriend.dto.enums.DateOption;
 import com.loltft.rudefriend.dto.enums.FilterMode;
-import com.loltft.rudefriend.dto.enums.GameSelectOption;
+import com.loltft.rudefriend.dto.enums.GameType;
 import com.loltft.rudefriend.dto.member.MemberRequest;
 import com.loltft.rudefriend.dto.member.MemberResponse;
 import com.loltft.rudefriend.entity.Member;
@@ -161,7 +161,7 @@ public class MemberService {
    */
   public List<MemberResponse> getMemberList(
       String search,
-      GameSelectOption option,
+      GameType option,
       Tier tier,
       FilterMode filterMode,
       Boolean status,
@@ -204,7 +204,7 @@ public class MemberService {
    */
   public Integer getMemberListCount(
       String search,
-      GameSelectOption option,
+      GameType option,
       Tier tier,
       FilterMode filterMode,
       Boolean status,
@@ -227,5 +227,9 @@ public class MemberService {
             dateTimeMap.get(TO),
             dateOption,
             hasGameInfo));
+  }
+
+  public Member findByMemberId(String memberId) {
+    return memberRepository.findByMemberId(memberId).orElse(null);
   }
 }

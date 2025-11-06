@@ -1,27 +1,24 @@
-package com.loltft.rudefriend.utils;
+package com.loltft.rudefriend.utils
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.util.HashMap;
-import java.util.Map;
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.LocalTime
 
-public class ConvertDateToDateTime {
+class ConvertDateToDateTime {
+    fun convertMap(dateFrom: LocalDate?, dateTo: LocalDate?): MutableMap<String?, LocalDateTime?> {
+        var from: LocalDateTime? = null
+        var to: LocalDateTime? = null
 
-  public Map<String, LocalDateTime> convertMap(LocalDate dateFrom, LocalDate dateTo) {
-    LocalDateTime from = null;
-    LocalDateTime to = null;
+        if (dateFrom != null) {
+            from = dateFrom.atStartOfDay()
+        }
+        if (dateTo != null) {
+            to = dateTo.atTime(LocalTime.MAX)
+        }
 
-    if (dateFrom != null) {
-      from = dateFrom.atStartOfDay();
+        val result = HashMap<String?, LocalDateTime?>()
+        result.put("from", from)
+        result.put("to", to)
+        return result
     }
-    if (dateTo != null) {
-      to = dateTo.atTime(LocalTime.MAX);
-    }
-
-    Map<String, LocalDateTime> result = new HashMap<>();
-    result.put("from", from);
-    result.put("to", to);
-    return result;
-  }
 }

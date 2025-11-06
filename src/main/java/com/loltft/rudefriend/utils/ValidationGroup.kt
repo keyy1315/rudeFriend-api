@@ -1,10 +1,7 @@
-package com.loltft.rudefriend.utils;
+package com.loltft.rudefriend.utils
 
-public class ValidationGroup {
+class ValidationGroup {
+    interface CREATE
 
-  public interface CREATE {
-  }
-
-  public interface UPDATE {
-  }
+    interface UPDATE
 }

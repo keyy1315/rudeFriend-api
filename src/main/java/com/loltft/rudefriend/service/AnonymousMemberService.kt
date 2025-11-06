@@ -1,29 +1,25 @@
-package com.loltft.rudefriend.service;
+package com.loltft.rudefriend.service
 
-import java.util.UUID;
-
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import com.loltft.rudefriend.entity.AnonymousMember;
-import com.loltft.rudefriend.repository.member.AnonymousMemberRepository;
-
-import lombok.RequiredArgsConstructor;
+import com.loltft.rudefriend.entity.AnonymousMember
+import com.loltft.rudefriend.repository.member.AnonymousMemberRepository
+import lombok.RequiredArgsConstructor
+import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
+import java.util.*
 
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class AnonymousMemberService {
+class AnonymousMemberService {
+    private val anonymousMemberRepository: AnonymousMemberRepository? = null
 
-  private final AnonymousMemberRepository anonymousMemberRepository;
+    @Transactional
+    fun saveAnonymousMember(ipAddress: String?) {
+        val anonymousMember: AnonymousMember = AnonymousMember.builder()
+            .id(UUID.randomUUID())
+            .ipAddress(ipAddress)
+            .build()
 
-  @Transactional
-  public void saveAnonymousMember(String ipAddress) {
-    AnonymousMember anonymousMember = AnonymousMember.builder()
-        .id(UUID.randomUUID())
-        .ipAddress(ipAddress)
-        .build();
-
-    anonymousMemberRepository.save(anonymousMember);
-  }
+        anonymousMemberRepository!!.save<AnonymousMember?>(anonymousMember)
+    }
 }

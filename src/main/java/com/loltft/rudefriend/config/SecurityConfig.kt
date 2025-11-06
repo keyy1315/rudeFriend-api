@@ -1,8 +1,10 @@
-import com.loltft.rudefriend.config.JwtProperties
+package com.loltft.rudefriend.config
+
 import com.loltft.rudefriend.jwt_security.CustomAccessDeniedHandler
 import com.loltft.rudefriend.jwt_security.JwtAuthenticationEntryPoint
 import com.loltft.rudefriend.jwt_security.JwtAuthenticationFilter
 import com.loltft.rudefriend.jwt_security.RefreshTokenFilter
+import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.authentication.AuthenticationManager
@@ -25,32 +27,28 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
+@EnableConfigurationProperties(JwtProperties::class)
 class SecurityConfig(
     private val jwtProperties: JwtProperties,
-//    private val userDetailsService: UserDetailsService,
     private val jwtAuthenticationFilter: JwtAuthenticationFilter,
     private val jwtAuthenticationEntryPoint: JwtAuthenticationEntryPoint,
-    private val customAccessDeniedHandler: CustomAccessDeniedHandler
+    private val customAccessDeniedHandler: CustomAccessDeniedHandler,
+    private val userDetailsService: UserDetailsService
 ) {
 
     @Bean
     fun passwordEncoder(): PasswordEncoder = BCryptPasswordEncoder()
 
     @Bean
-    fun authenticationProvider(
-        userDetailsService: UserDetailsService,
-        passwordEncoder: PasswordEncoder
-    ): AuthenticationProvider {
-        val provider = DaoAuthenticationProvider()
+    fun authenticationProvider(passwordEncoder: PasswordEncoder): AuthenticationProvider {
+        val provider = DaoAuthenticationProvider(passwordEncoder)
         provider.setUserDetailsService(userDetailsService)
-        provider.setPasswordEncoder(passwordEncoder)
         return provider
     }
 
     @Bean
-    fun authenticationManager(
-        config: AuthenticationConfiguration
-    ): AuthenticationManager = config.authenticationManager
+    fun authenticationManager(config: AuthenticationConfiguration): AuthenticationManager =
+        config.authenticationManager
 
     @Bean
     fun corsConfigurationSource(): CorsConfigurationSource {
@@ -59,7 +57,10 @@ class SecurityConfig(
             allowedMethods = listOf("GET", "POST", "PUT", "DELETE", "OPTIONS")
             allowedHeaders = listOf("*")
             allowCredentials = false
-            exposedHeaders = listOf(jwtProperties.accessHeaderName, jwtProperties.refreshCookieKey)
+            exposedHeaders = listOf(
+                jwtProperties.accessHeaderName,
+                jwtProperties.refreshCookieKey
+            )
         }
 
         return UrlBasedCorsConfigurationSource().apply {
@@ -70,7 +71,8 @@ class SecurityConfig(
     @Bean
     fun securityFilterChain(
         http: HttpSecurity,
-        refreshTokenFilter: RefreshTokenFilter
+        refreshTokenFilter: RefreshTokenFilter,
+        authenticationProvider: AuthenticationProvider
     ): SecurityFilterChain {
         http
             .formLogin { it.disable() }
@@ -90,7 +92,7 @@ class SecurityConfig(
                     ).permitAll()
                     .anyRequest().authenticated()
             }
-            .authenticationProvider(authenticationProvider(userDetailsService, passwordEncoder()))
+            .authenticationProvider(authenticationProvider)
             .exceptionHandling {
                 it.authenticationEntryPoint(jwtAuthenticationEntryPoint)
                     .accessDeniedHandler(customAccessDeniedHandler)

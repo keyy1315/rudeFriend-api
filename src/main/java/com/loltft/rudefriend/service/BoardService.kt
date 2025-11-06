@@ -1,61 +1,57 @@
-package com.loltft.rudefriend.service;
+package com.loltft.rudefriend.service
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
-
-import com.loltft.rudefriend.dto.board.BoardRequest;
-import com.loltft.rudefriend.dto.board.BoardResponse;
-import com.loltft.rudefriend.entity.Board;
-import com.loltft.rudefriend.repository.board.BoardRepository;
-
-import lombok.RequiredArgsConstructor;
+import com.loltft.rudefriend.dto.board.BoardRequest
+import com.loltft.rudefriend.dto.board.BoardResponse
+import com.loltft.rudefriend.entity.Board
+import com.loltft.rudefriend.repository.board.BoardRepository
+import lombok.RequiredArgsConstructor
+import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
+import org.springframework.web.multipart.MultipartFile
+import java.util.*
 
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class BoardService {
+class BoardService(
+    private val boardRepository: BoardRepository? = null,
+    private val s3Service: S3Service? = null
+) {
+    /**
+     * 게시글 생성
+     *
+     * @param files        업로드 할 video/image []
+     * @param boardRequest 게시글 생성 요청 DTO
+     * @param authUsername Authentication 객체에 저장된 username
+     * @return 생성 된 게시글
+     */
+    fun createBoard(
+        files: MutableList<MultipartFile>, boardRequest: BoardRequest,
+        authUsername: String?
+    ): BoardResponse? {
+        val fileUrls: MutableList<String?> = ArrayList<String?>()
 
-  private final BoardRepository boardRepository;
-  private final S3Service s3Service;
+        try {
+            for (file in files) {
+                val uploadUrl = s3Service!!.uploadFile(file)
+                fileUrls.add(uploadUrl)
+            }
+        } catch (e: Exception) {
+            throw RuntimeException(e)
+        }
 
-  /**
-   * 게시글 생성
-   *
-   * @param files        업로드 할 video/image []
-   * @param boardRequest 게시글 생성 요청 DTO
-   * @param authUsername Authentication 객체에 저장된 username
-   * @return 생성 된 게시글
-   */
-  public BoardResponse createBoard(List<MultipartFile> files, BoardRequest boardRequest,
-      String authUsername) {
-    List<String> fileUrls = new ArrayList<>();
+        val board: Board = Board(
+            id = UUID.randomUUID(),
+            title = boardRequest.title,
+            content = boardRequest.content,
+            gameType = boardRequest.gameType,
+            tags = boardRequest.tags,
+            createdBy = authUsername,
+            fileUrls = fileUrls,
+        );
 
-    try {
-      for (MultipartFile file : files) {
-        String uploadUrl = s3Service.uploadFile(file);
-        fileUrls.add(uploadUrl);
-      }
-    } catch (Exception e) {
-      throw new RuntimeException(e);
+        boardRepository!!.save<Board?>(board)
+
+        return null
     }
-
-    Board board = Board.builder()
-        .id(UUID.randomUUID())
-        .title(boardRequest.getTitle())
-        .content(boardRequest.getContent())
-        .gameType(boardRequest.getGameType())
-        .tags(boardRequest.getTags())
-        .createdBy(authUsername)
-        .fileUrls(fileUrls)
-        .build();
-
-    boardRepository.save(board);
-
-    return null;
-  }
 }

@@ -67,8 +67,8 @@ class JwtAuthenticationFilter(
                     SecurityContextHolder.getContext().setAuthentication(authenticationToken)
                 }
             } else {
-                val anonymousIpAddress = request.getRemoteAddr()
-                val grantedAuthorities = List.of<GrantedAuthority?>(
+                val anonymousIpAddress = request.remoteAddr
+                val grantedAuthorities = listOf<GrantedAuthority?>(
                     SimpleGrantedAuthority(
                         "ROLE_ANONYMOUS"
                     )
@@ -99,10 +99,10 @@ class JwtAuthenticationFilter(
     private fun handleJwtException(e: JwtException, response: HttpServletResponse) {
         val errorMessage = tokenProvider!!.handleJwtExceptionMessage(e)
 
-        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED)
-        response.setContentType("application/json;charset=UTF-8")
+        response.status = HttpServletResponse.SC_UNAUTHORIZED
+        response.contentType = "application/json;charset=UTF-8"
         response
-            .getWriter()
+            .writer
             .write(objectMapper!!.writeValueAsString(fail<Any?>(errorMessage)))
     }
 }

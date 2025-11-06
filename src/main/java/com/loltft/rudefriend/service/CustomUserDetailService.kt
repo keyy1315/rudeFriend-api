@@ -1,7 +1,6 @@
 package com.loltft.rudefriend.service
 
 import com.loltft.rudefriend.repository.member.MemberRepository
-import lombok.RequiredArgsConstructor
 import org.springframework.security.core.userdetails.User
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
@@ -10,7 +9,6 @@ import org.springframework.stereotype.Service
 import java.util.function.Supplier
 
 @Service
-@RequiredArgsConstructor
 class CustomUserDetailService : UserDetailsService {
     private val memberRepository: MemberRepository? = null
 
@@ -25,16 +23,16 @@ class CustomUserDetailService : UserDetailsService {
     override fun loadUserByUsername(memberId: String?): UserDetails {
         val member = memberRepository!!
             .findByMemberId(memberId)
-            .orElseThrow<UsernameNotFoundException?>(Supplier { UsernameNotFoundException(memberId) })
+            ?.orElseThrow(Supplier { UsernameNotFoundException(memberId) })
 
         return User.builder()
-            .username(member.memberId)
-            .password(member.password)
-            .authorities(member.role.toString())
+            .username(member?.memberId)
+            .password(member?.password)
+            .authorities(member?.role.toString())
             .accountExpired(false)
             .accountLocked(false)
             .credentialsExpired(false)
-            .disabled(!member.status!!)
+            .disabled(!member?.status!!)
             .build()
     }
 }

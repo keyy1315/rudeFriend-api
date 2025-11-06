@@ -3,10 +3,6 @@ package com.loltft.rudefriend.entity
 import com.loltft.rudefriend.entity.enums.VoteType
 import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.persistence.*
-import lombok.AllArgsConstructor
-import lombok.Getter
-import lombok.NoArgsConstructor
-import lombok.experimental.SuperBuilder
 import org.hibernate.annotations.JdbcTypeCode
 import java.sql.Types
 import java.util.*

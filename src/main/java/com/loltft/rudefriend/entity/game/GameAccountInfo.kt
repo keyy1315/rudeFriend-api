@@ -4,10 +4,6 @@ import com.loltft.rudefriend.dto.game.GameInfoRequest
 import com.loltft.rudefriend.entity.enums.Tier
 import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.persistence.*
-import lombok.AllArgsConstructor
-import lombok.Getter
-import lombok.NoArgsConstructor
-import lombok.experimental.SuperBuilder
 import org.hibernate.annotations.JdbcTypeCode
 import java.sql.Types
 import java.util.*

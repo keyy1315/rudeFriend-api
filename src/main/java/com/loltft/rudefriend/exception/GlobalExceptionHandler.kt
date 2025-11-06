@@ -3,7 +3,6 @@ package com.loltft.rudefriend.exception
 import com.loltft.rudefriend.dto.ApiCommonResponse
 import com.loltft.rudefriend.dto.ApiCommonResponse.Companion.fail
 import io.jsonwebtoken.JwtException
-import lombok.extern.slf4j.Slf4j
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity

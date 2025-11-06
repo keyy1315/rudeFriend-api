@@ -4,14 +4,12 @@ import com.loltft.rudefriend.dto.board.BoardRequest
 import com.loltft.rudefriend.dto.board.BoardResponse
 import com.loltft.rudefriend.entity.Board
 import com.loltft.rudefriend.repository.board.BoardRepository
-import lombok.RequiredArgsConstructor
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.multipart.MultipartFile
 import java.util.*
 
 @Service
-@RequiredArgsConstructor
 @Transactional
 class BoardService(
     private val boardRepository: BoardRepository? = null,

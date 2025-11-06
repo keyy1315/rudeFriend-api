@@ -4,15 +4,9 @@ import com.loltft.rudefriend.dto.Validation
 import com.loltft.rudefriend.entity.enums.Tier
 import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.validation.constraints.NotBlank
-import lombok.AllArgsConstructor
-import lombok.Getter
-import lombok.NoArgsConstructor
 import java.util.*
 
 @Schema(description = "라이엇 계정 연동 요청 DTO")
-@Getter
-@AllArgsConstructor
-@NoArgsConstructor
 data class GameInfoRequest(
     @Schema(description = "라이엇 계정 PUUID")
     var gameAccountId: @NotBlank(

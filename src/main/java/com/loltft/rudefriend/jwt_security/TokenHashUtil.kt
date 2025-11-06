@@ -1,7 +1,6 @@
 package com.loltft.rudefriend.jwt_security
 
 import com.loltft.rudefriend.config.JwtProperties
-import lombok.RequiredArgsConstructor
 import org.springframework.stereotype.Component
 import org.springframework.util.StringUtils
 import java.nio.charset.StandardCharsets
@@ -10,7 +9,6 @@ import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
 
 @Component
-@RequiredArgsConstructor
 class TokenHashUtil(private val jwtProperties: JwtProperties? = null) {
 
     fun hashToken(token: String?): String? {

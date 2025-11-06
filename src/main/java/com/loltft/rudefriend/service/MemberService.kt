@@ -13,7 +13,6 @@ import com.loltft.rudefriend.entity.enums.Tier
 import com.loltft.rudefriend.entity.game.GameAccountInfo
 import com.loltft.rudefriend.repository.member.MemberRepository
 import com.loltft.rudefriend.utils.ConvertDateToDateTime
-import lombok.RequiredArgsConstructor
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException
 import org.springframework.security.core.userdetails.UserDetails
@@ -26,11 +25,10 @@ import java.util.*
 import java.util.function.Supplier
 
 @Service
-@RequiredArgsConstructor
 @Transactional(readOnly = true)
 class MemberService(
-    private val memberRepository: MemberRepository? = null,
-    private val passwordEncoder: PasswordEncoder? = null
+    private val memberRepository: MemberRepository,
+    private val passwordEncoder: PasswordEncoder
 ) {
     var convertDateToDateTime: ConvertDateToDateTime = ConvertDateToDateTime()
 
@@ -41,8 +39,8 @@ class MemberService(
      * @return 조회 한 회원 엔티티
      */
     fun findByRefreshToken(refreshToken: String?): Member? {
-        return memberRepository!!.findByRefreshToken(refreshToken)
-            .orElseThrow<NoSuchElementException?>(Supplier { NoSuchElementException("존재하지 않는 회원 정보") })
+        return memberRepository.findByRefreshToken(refreshToken)
+            ?.orElseThrow(Supplier { NoSuchElementException("존재하지 않는 회원 정보") })
     }
 
     /**
@@ -62,10 +60,10 @@ class MemberService(
         }
 
         val member = fromRequest(
-            memberRequest, passwordEncoder!!.encode(memberRequest.password), gameAccountInfo
+            memberRequest, passwordEncoder.encode(memberRequest.password), gameAccountInfo
         )
 
-        memberRepository!!.save<Member?>(member)
+        memberRepository.save<Member?>(member)
 
         return from(member)
     }
@@ -84,15 +82,15 @@ class MemberService(
     fun updateMember(
         id: UUID, memberRequest: MemberRequest, userDetails: UserDetails
     ): MemberResponse? {
-        val member = memberRepository!!.findById(id)
-            .orElseThrow<NoSuchElementException?>(Supplier { NoSuchElementException("존재하지 않는 회원 ID : " + id) })
-        val loginUsername = userDetails.getUsername()
-        val role = userDetails.getAuthorities().iterator().next().getAuthority()
+        val member = memberRepository.findById(id)
+            .orElseThrow(Supplier { NoSuchElementException("존재하지 않는 회원 ID : $id") })
+        val loginUsername = userDetails.username
+        val role = userDetails.authorities.iterator().next().authority
 
         if (!StringUtils.hasText(loginUsername)) {
             throw AuthenticationCredentialsNotFoundException("로그인 정보가 없습니다.")
         }
-        if ((member.memberId != loginUsername) && (Role.ADMIN.name != role) && (Role.SUPER.name != role)) {
+        if ((member?.memberId != loginUsername) && (Role.ADMIN.name != role) && (Role.SUPER.name != role)) {
             throw AccessDeniedException("회원 정보 수정 권한이 없습니다.")
         }
 
@@ -100,10 +98,10 @@ class MemberService(
         if (memberRequest.gameInfo != null) {
             gameInfo = GameAccountInfo.fromRequest(memberRequest.gameInfo)
         }
-        val encodedPassword = passwordEncoder!!.encode(memberRequest.password)
-        member.updateMember(memberRequest, encodedPassword, gameInfo)
+        val encodedPassword = passwordEncoder.encode(memberRequest.password)
+        member?.updateMember(memberRequest, encodedPassword, gameInfo)
 
-        return from(member)
+        return member?.let { MemberResponse.from(it) }
     }
 
     /**
@@ -112,11 +110,11 @@ class MemberService(
      */
     @Transactional
     fun updateStatusMember(id: UUID): MemberResponse? {
-        val member = memberRepository!!.findById(id)
-            .orElseThrow<NoSuchElementException?>(Supplier { NoSuchElementException("존재하지 않는 회원 ID : " + id) })
-        member.updateStatus()
+        val member = memberRepository.findById(id)
+            .orElseThrow(Supplier { NoSuchElementException("존재하지 않는 회원 ID : $id") })
+        member?.updateStatus()
 
-        return from(member)
+        return member?.let { MemberResponse.from(it) }
     }
 
     /**
@@ -126,10 +124,10 @@ class MemberService(
      * @return 회원 응답 객체
      */
     fun getMemberDetail(id: UUID): MemberResponse? {
-        val member = memberRepository!!.findById(id)
-            .orElseThrow<NoSuchElementException?>(Supplier { NoSuchElementException("존재하지 않는 회원 ID : " + id) })
+        val member = memberRepository.findById(id)
+            .orElseThrow(Supplier { NoSuchElementException("존재하지 않는 회원 ID : $id") })
 
-        return from(member)
+        return member?.let { from(it) }
     }
 
     /**
@@ -163,15 +161,15 @@ class MemberService(
     ): MutableList<MemberResponse?>? {
         val dateTimeMap = convertDateToDateTime.convertMap(dateFrom, dateTo)
 
-        return memberRepository!!.findAllByOption(
+        return memberRepository.findAllByOption(
             search,
             option,
             tier,
             filterMode,
             status,
             role,
-            dateTimeMap.get(FROM),
-            dateTimeMap.get(TO),
+            dateTimeMap[FROM],
+            dateTimeMap[TO],
             dateOption,
             hasGameInfo,
             pageNo
@@ -204,27 +202,29 @@ class MemberService(
         dateTo: LocalDate?,
         dateOption: DateOption?,
         hasGameInfo: Boolean?
-    ): Int {
+    ): Int? {
         val dateTimeMap = convertDateToDateTime.convertMap(dateFrom, dateTo)
 
-        return Math.toIntExact(
-            memberRepository!!.countAllByOption(
-                search,
-                option,
-                tier,
-                filterMode,
-                status,
-                role,
-                dateTimeMap.get(FROM),
-                dateTimeMap.get(TO),
-                dateOption,
-                hasGameInfo
+        return memberRepository.countAllByOption(
+            search,
+            option,
+            tier,
+            filterMode,
+            status,
+            role,
+            dateTimeMap[FROM],
+            dateTimeMap[TO],
+            dateOption,
+            hasGameInfo
+        )?.let {
+            Math.toIntExact(
+                it
             )
-        )
+        }
     }
 
     fun findByMemberId(memberId: String?): Member? {
-        return memberRepository!!.findByMemberId(memberId).orElse(null)
+        return memberRepository.findByMemberId(memberId)?.orElse(null)
     }
 
     companion object {

@@ -5,15 +5,9 @@ import com.loltft.rudefriend.entity.Member
 import com.loltft.rudefriend.entity.enums.Role
 import com.loltft.rudefriend.entity.game.GameAccountInfo
 import io.swagger.v3.oas.annotations.media.Schema
-import lombok.*
 import java.time.LocalDateTime
 import java.util.*
 
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
 @Schema(description = "회원 응답 DTO")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 data class MemberResponse(

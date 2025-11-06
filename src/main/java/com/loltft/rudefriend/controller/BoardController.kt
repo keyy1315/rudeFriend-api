@@ -9,7 +9,6 @@ import com.loltft.rudefriend.utils.ValidationGroup
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.tags.Tag
-import lombok.RequiredArgsConstructor
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.AccessDeniedException
@@ -25,7 +24,6 @@ import org.springframework.web.multipart.MultipartFile
 
 @Tag(name = "게시글 기능 API", description = "회원 CRUD 기능 API")
 @RestController
-@RequiredArgsConstructor
 @Validated
 @RequestMapping("/api/board")
 @PreAuthorize("isAuthenticated()")

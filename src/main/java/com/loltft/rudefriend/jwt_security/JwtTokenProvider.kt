@@ -1,16 +1,10 @@
 package com.loltft.rudefriend.jwt_security
 
 import com.loltft.rudefriend.config.JwtProperties
-import io.jsonwebtoken.ExpiredJwtException
-import io.jsonwebtoken.JwtException
-import io.jsonwebtoken.Jwts
-import io.jsonwebtoken.MalformedJwtException
-import io.jsonwebtoken.UnsupportedJwtException
+import io.jsonwebtoken.*
 import io.jsonwebtoken.security.Keys
 import io.jsonwebtoken.security.SignatureException
 import jakarta.servlet.http.HttpServletRequest
-import lombok.RequiredArgsConstructor
-import lombok.extern.slf4j.Slf4j
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.userdetails.UserDetails
@@ -20,9 +14,7 @@ import java.nio.charset.StandardCharsets
 import java.util.*
 import javax.crypto.SecretKey
 
-@Slf4j
 @Component
-@RequiredArgsConstructor
 class JwtTokenProvider(private val jwtProperties: JwtProperties? = null) {
 
     private val signingKey: SecretKey

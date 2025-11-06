@@ -4,11 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.loltft.rudefriend.dto.ApiCommonResponse.Companion.fail
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
-import lombok.RequiredArgsConstructor
-import lombok.extern.slf4j.Slf4j
 import org.slf4j.LoggerFactory
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException
-import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.security.authentication.DisabledException
 import org.springframework.security.authentication.InsufficientAuthenticationException
 import org.springframework.security.core.AuthenticationException
@@ -17,8 +14,6 @@ import org.springframework.stereotype.Component
 import java.io.IOException
 
 @Component
-@RequiredArgsConstructor
-@Slf4j
 class JwtAuthenticationEntryPoint(
     private val objectMapper: ObjectMapper? = null
 ) : AuthenticationEntryPoint {

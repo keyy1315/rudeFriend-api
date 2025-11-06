@@ -5,14 +5,9 @@ import com.loltft.rudefriend.utils.ValidationGroup
 import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Size
-import lombok.AllArgsConstructor
-import lombok.Getter
-import lombok.NoArgsConstructor
 
-@Getter
+
 @Schema(description = "게시글 생성 요청 DTO")
-@AllArgsConstructor
-@NoArgsConstructor
 data class BoardRequest(
     @Schema(description = "게시글 제목", example = "게시글 제목")
     var title: @NotBlank(

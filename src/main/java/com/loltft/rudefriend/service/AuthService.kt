@@ -9,7 +9,6 @@ import com.loltft.rudefriend.jwt_security.TokenHashUtil
 import com.loltft.rudefriend.repository.member.MemberRepository
 import jakarta.servlet.http.Cookie
 import jakarta.servlet.http.HttpServletResponse
-import lombok.RequiredArgsConstructor
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
@@ -21,7 +20,6 @@ import org.springframework.util.StringUtils
 import java.util.function.Supplier
 
 @Service
-@RequiredArgsConstructor
 class AuthService {
     private val authenticationManager: AuthenticationManager? = null
     private val tokenProvider: JwtTokenProvider? = null
@@ -60,14 +58,14 @@ class AuthService {
         val hashedRefreshToken = tokenHashUtil!!.hashToken(refreshToken)
         val member = memberRepository!!
             .findByMemberId(tokenProvider.getUsernameFromAccessToken(accessToken))
-            .orElseThrow<UsernameNotFoundException?>(Supplier {
+            ?.orElseThrow<UsernameNotFoundException?>(Supplier {
                 UsernameNotFoundException(
                     loginRequest.memberId
                 )
             })
-        member.updateRefreshToken(hashedRefreshToken)
+        member?.updateRefreshToken(hashedRefreshToken)
 
-        return from(member)
+        return member?.let { from(it) }
     }
 
     /**
@@ -87,10 +85,10 @@ class AuthService {
             if (refreshToken != null) {
                 val cookie = Cookie(jwtProperties!!.refreshCookieKey, refreshToken)
 
-                cookie.setHttpOnly(true) // JS 접근 차단
-                cookie.setSecure(true) // HTTPS 환경에서만 전송
-                cookie.setPath("/") // 전체 경로에서 사용 가능
-                cookie.setMaxAge(Math.toIntExact(jwtProperties.refreshExpiration)) // 7일
+                cookie.isHttpOnly = true // JS 접근 차단
+                cookie.secure = true // HTTPS 환경에서만 전송
+                cookie.path = "/" // 전체 경로에서 사용 가능
+                cookie.maxAge = Math.toIntExact(jwtProperties.refreshExpiration) // 7일
 
                 response.addCookie(cookie)
             }
@@ -106,14 +104,14 @@ class AuthService {
         }
         val member = memberRepository!!
             .findByMemberId(memberId)
-            .orElseThrow<UsernameNotFoundException?>(Supplier { UsernameNotFoundException(memberId) })
+            ?.orElseThrow(Supplier { UsernameNotFoundException(memberId) })
 
-        member.updateRefreshToken(null)
+        member?.updateRefreshToken(null)
 
         val cookie = Cookie(jwtProperties!!.refreshCookieKey, null)
-        cookie.setHttpOnly(true)
-        cookie.setPath("/")
-        cookie.setMaxAge(0)
+        cookie.isHttpOnly = true
+        cookie.path = "/"
+        cookie.maxAge = 0
         response.addCookie(cookie)
     }
 }

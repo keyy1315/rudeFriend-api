@@ -1,15 +1,11 @@
-package com.loltft.rudefriend.repository.member;
+package com.loltft.rudefriend.repository.member
 
-import java.util.Optional;
-import java.util.UUID;
+import com.loltft.rudefriend.entity.Member
+import org.springframework.data.jpa.repository.JpaRepository
+import java.util.*
 
-import org.springframework.data.jpa.repository.JpaRepository;
+interface MemberRepository : JpaRepository<Member?, UUID?>, MemberRepositoryCustom {
+    fun findByMemberId(memberId: String?): Optional<Member?>?
 
-import com.loltft.rudefriend.entity.Member;
-
-public interface MemberRepository extends JpaRepository<Member, UUID>, MemberRepositoryCustom {
-
-  Optional<Member> findByMemberId(String memberId);
-
-  Optional<Member> findByRefreshToken(String refreshToken);
+    fun findByRefreshToken(refreshToken: String?): Optional<Member?>?
 }

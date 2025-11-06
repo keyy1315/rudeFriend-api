@@ -1,11 +1,7 @@
-package com.loltft.rudefriend.repository.member;
+package com.loltft.rudefriend.repository.member
 
-import java.util.UUID;
+import com.loltft.rudefriend.entity.AnonymousMember
+import org.springframework.data.jpa.repository.JpaRepository
+import java.util.*
 
-import org.springframework.data.jpa.repository.JpaRepository;
-
-import com.loltft.rudefriend.entity.AnonymousMember;
-
-public interface AnonymousMemberRepository extends JpaRepository<AnonymousMember, UUID> {
-
-}
+interface AnonymousMemberRepository : JpaRepository<AnonymousMember?, UUID?>

@@ -110,7 +110,10 @@ spotless {
     }
 }
 
-// JavaCompile 의존성 설정
-tasks.withType<JavaCompile> {
-    dependsOn("spotlessApply")
+tasks.named("spotlessApply") {
+    dependsOn("kaptKotlin")
+}
+
+tasks.named("spotlessJava") {
+    dependsOn("kaptKotlin")
 }

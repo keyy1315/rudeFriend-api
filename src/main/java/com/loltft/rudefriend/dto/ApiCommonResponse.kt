@@ -13,7 +13,7 @@ data class ApiCommonResponse<T>(
     val message: String? = null,
 
     @Schema(description = "응답 데이터")
-    val result: ApiResult<T?>? = null
+    val result: ApiResult<T>? = null
 ) {
     companion object {
         private const val OK = "ok"
@@ -41,7 +41,7 @@ data class ApiCommonResponse<T>(
          * @return 메세지만 존재하는 공통 응답 객체
          */
         @JvmStatic
-        fun <T> ok(message: String?): ApiCommonResponse<T?>? {
+        fun <T> ok(message: String?): ApiCommonResponse<T>? {
             return ApiCommonResponse(
                 status = OK,
                 message = message,
@@ -55,7 +55,7 @@ data class ApiCommonResponse<T>(
          * @return 메세지만 존재하는 공통 응답 객체
          */
         @JvmStatic
-        fun <T> fail(message: String?): ApiCommonResponse<T?>? {
+        fun <T> fail(message: String?): ApiCommonResponse<T>? {
             return ApiCommonResponse(
                 status = FAIL,
                 message = message,

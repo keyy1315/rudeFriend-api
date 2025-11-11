@@ -5,6 +5,7 @@ import com.loltft.rudefriend.jwt_security.JwtAuthenticationEntryPoint
 import com.loltft.rudefriend.jwt_security.JwtAuthenticationFilter
 import com.loltft.rudefriend.jwt_security.RefreshTokenFilter
 import org.springframework.boot.context.properties.EnableConfigurationProperties
+import org.springframework.http.HttpMethod
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.authentication.AuthenticationManager
@@ -90,6 +91,7 @@ class SecurityConfig(
                         "/v3/api-docs/**",
                         "/swagger-ui.html"
                     ).permitAll()
+                    .requestMatchers(HttpMethod.POST, "/api/board").permitAll()
                     .anyRequest().authenticated()
             }
             .authenticationProvider(authenticationProvider)

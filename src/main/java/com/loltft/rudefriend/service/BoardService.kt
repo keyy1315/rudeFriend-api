@@ -12,8 +12,8 @@ import java.util.*
 @Service
 @Transactional
 class BoardService(
-    private val boardRepository: BoardRepository? = null,
-    private val s3Service: S3Service? = null
+    private val boardRepository: BoardRepository,
+    private val s3Service: S3Service
 ) {
     /**
      * 게시글 생성
@@ -24,21 +24,21 @@ class BoardService(
      * @return 생성 된 게시글
      */
     fun createBoard(
-        files: MutableList<MultipartFile>, boardRequest: BoardRequest,
-        authUsername: String?
-    ): BoardResponse? {
-        val fileUrls: MutableList<String?> = ArrayList<String?>()
-
+        files: List<MultipartFile>,
+        boardRequest: BoardRequest,
+        authUsername: String
+    ): BoardResponse {
+        val fileUrls: MutableList<String> = mutableListOf()
         try {
             for (file in files) {
-                val uploadUrl = s3Service!!.uploadFile(file)
+                val uploadUrl = s3Service.uploadFile(boardRequest.gameType.name, file)
                 fileUrls.add(uploadUrl)
             }
         } catch (e: Exception) {
             throw RuntimeException(e)
         }
 
-        val board: Board = Board(
+        val board = Board(
             id = UUID.randomUUID(),
             title = boardRequest.title,
             content = boardRequest.content,
@@ -46,10 +46,10 @@ class BoardService(
             tags = boardRequest.tags,
             createdBy = authUsername,
             fileUrls = fileUrls,
-        );
+        )
 
-        boardRepository!!.save<Board?>(board)
+        boardRepository.save(board)
 
-        return null
+        return BoardResponse.of(board)
     }
 }

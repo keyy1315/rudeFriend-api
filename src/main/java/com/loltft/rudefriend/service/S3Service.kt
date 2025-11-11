@@ -11,29 +11,25 @@ import java.io.IOException
 import java.util.*
 
 @Service
-class S3Service {
+class S3Service(
+    private val s3Client: S3Client,
     @Value("\${cloud.aws.s3.bucket}")
-    private val bucketName: String? = null
-
+    private val bucketName: String,
     @Value("\${cloud.aws.region.static}")
-    private val region: String? = null
-
-    private val s3Client: S3Client? = null
-
+    private val region: String
+) {
     @Throws(IOException::class)
-    fun uploadFile(file: MultipartFile): String? {
-        val key: String? = UUID.randomUUID().toString()
+    fun uploadFile(gameType: String, file: MultipartFile): String {
+        val key = gameType + "/" + UUID.randomUUID().toString()
 
         val putObjectRequest = PutObjectRequest.builder()
             .bucket(bucketName)
             .key(key)
-            .contentType(file.getContentType())
-            .acl(ObjectCannedACL.PUBLIC_READ)
+            .contentType(file.contentType)
             .build()
 
-        s3Client!!.putObject(putObjectRequest, RequestBody.fromBytes(file.getBytes()))
+        s3Client.putObject(putObjectRequest, RequestBody.fromBytes(file.bytes))
 
-        val s3FileUrl = "https://" + bucketName + ".s3." + region + ".amazonaws.com/" + key
-        return key
+        return "https://$bucketName.s3.$region.amazonaws.com/$key"
     }
 }

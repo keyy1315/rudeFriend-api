@@ -30,7 +30,7 @@ data class BoardRequest(
     ) String? = null,
 
     @Schema(description = "게시글 태그 배열")
-    var tags: MutableSet<String?>? = null,
+    var tags: MutableSet<String>? = null,
 
     @Schema(description = "게임 타입 (LOL/TFT)")
     val gameType: GameType = GameType.LOL

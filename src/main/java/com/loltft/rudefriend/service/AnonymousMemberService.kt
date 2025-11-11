@@ -8,16 +8,17 @@ import java.util.*
 
 @Service
 @Transactional(readOnly = true)
-class AnonymousMemberService {
-    private val anonymousMemberRepository: AnonymousMemberRepository? = null
-
+class AnonymousMemberService(
+    private val anonymousMemberRepository: AnonymousMemberRepository
+) {
     @Transactional
-    fun saveAnonymousMember(ipAddress: String?) {
-        val anonymousMember = AnonymousMember(
-            id = UUID.randomUUID(),
-            ipAddress = ipAddress,
-        )
-
-        anonymousMemberRepository!!.save<AnonymousMember?>(anonymousMember)
+    fun findOrCreateAnonymousMember(ipAddress: String?): AnonymousMember {
+        return anonymousMemberRepository.findByIpAddress(ipAddress)
+            ?: anonymousMemberRepository.save(
+                AnonymousMember(
+                    id = UUID.randomUUID(),
+                    ipAddress = ipAddress,
+                )
+            )
     }
 }

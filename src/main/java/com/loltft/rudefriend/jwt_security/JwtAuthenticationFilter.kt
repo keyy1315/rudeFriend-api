@@ -11,11 +11,7 @@ import jakarta.servlet.ServletException
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.slf4j.LoggerFactory
-import org.springframework.security.authentication.AnonymousAuthenticationToken
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
-import org.springframework.security.core.Authentication
-import org.springframework.security.core.GrantedAuthority
-import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource
 import org.springframework.stereotype.Component
@@ -25,14 +21,12 @@ import java.io.IOException
 
 @Component
 class JwtAuthenticationFilter(
-    private val tokenProvider: JwtTokenProvider? = null,
-    private val customUserDetailService: CustomUserDetailService? = null,
-    private val jwtProperties: JwtProperties? = null,
-    private val objectMapper: ObjectMapper? = null,
-    private val anonymousMemberService: AnonymousMemberService? = null
+    private val tokenProvider: JwtTokenProvider,
+    private val customUserDetailService: CustomUserDetailService,
+    private val jwtProperties: JwtProperties,
+    private val objectMapper: ObjectMapper,
 ) : OncePerRequestFilter() {
     private val log = LoggerFactory.getLogger(javaClass)
-
 
     @Throws(ServletException::class, IOException::class)
     override fun doFilterInternal(
@@ -40,15 +34,15 @@ class JwtAuthenticationFilter(
         filterChain: FilterChain
     ) {
         try {
-            val token = tokenProvider!!.getAccessTokenFromRequest(request)
+            val token = tokenProvider.getAccessTokenFromRequest(request)
 
             if (StringUtils.hasText(token)
-                && tokenProvider.getTokenSubject(token) == jwtProperties!!.accessTokenSubject
+                && tokenProvider.getTokenSubject(token) == jwtProperties.accessTokenSubject
             ) {
                 if (tokenProvider.validateToken(token)) {
                     val username = tokenProvider.getUsernameFromAccessToken(token)
 
-                    val userDetails = customUserDetailService!!.loadUserByUsername(username)
+                    val userDetails = customUserDetailService.loadUserByUsername(username)
 
                     val webDetail = WebAuthenticationDetailsSource().buildDetails(
                         request
@@ -56,25 +50,25 @@ class JwtAuthenticationFilter(
                     log.info("요청 클라이언트 환경 정보 : {}", webDetail)
 
                     val authenticationToken = UsernamePasswordAuthenticationToken(
-                        userDetails, null, userDetails.getAuthorities()
+                        userDetails, null, userDetails.authorities
                     )
-                    authenticationToken.setDetails(webDetail)
+                    authenticationToken.details = webDetail
 
-                    SecurityContextHolder.getContext().setAuthentication(authenticationToken)
+                    SecurityContextHolder.getContext().authentication = authenticationToken
                 }
             } else {
                 val anonymousIpAddress = request.remoteAddr
-                val grantedAuthorities = listOf<GrantedAuthority?>(
-                    SimpleGrantedAuthority(
-                        "ROLE_ANONYMOUS"
-                    )
+                val anonymousUserDetails =
+                    customUserDetailService.loadUserByIpAddress(anonymousIpAddress)
+
+                val authenticationToken = UsernamePasswordAuthenticationToken(
+                    anonymousUserDetails,
+                    null,
+                    anonymousUserDetails.authorities
                 )
-                val anonymousAuthentication: Authentication = AnonymousAuthenticationToken(
-                    "ANONYMOUS",
-                    anonymousIpAddress, grantedAuthorities
-                )
-                SecurityContextHolder.getContext().setAuthentication(anonymousAuthentication)
-                anonymousMemberService!!.saveAnonymousMember(anonymousIpAddress)
+                authenticationToken.details =
+                    WebAuthenticationDetailsSource().buildDetails(request)
+                SecurityContextHolder.getContext().authentication = authenticationToken
             }
         } catch (e: JwtException) {
             log.error("JWT 필터 JwtException : {}", e.message, e)
@@ -93,12 +87,12 @@ class JwtAuthenticationFilter(
      */
     @Throws(IOException::class)
     private fun handleJwtException(e: JwtException, response: HttpServletResponse) {
-        val errorMessage = tokenProvider!!.handleJwtExceptionMessage(e)
+        val errorMessage = tokenProvider.handleJwtExceptionMessage(e)
 
         response.status = HttpServletResponse.SC_UNAUTHORIZED
         response.contentType = "application/json;charset=UTF-8"
         response
             .writer
-            .write(objectMapper!!.writeValueAsString(fail<Any?>(errorMessage)))
+            .write(objectMapper.writeValueAsString(fail<Any?>(errorMessage)))
     }
 }

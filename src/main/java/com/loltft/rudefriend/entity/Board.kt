@@ -32,14 +32,14 @@ class Board(
 
     @ElementCollection(fetch = FetchType.EAGER)
     @Schema(description = "게시글 태그")
-    var tags: MutableSet<String?>? = null,
+    var tags: MutableSet<String>? = null,
 
-    @Column(columnDefinition = "text[]")
+    @Column
     @Schema(description = "S3에 업로드 된 파일 URL 배열 (이미지/동영상")
-    var fileUrls: MutableList<String?>? = null,
+    var fileUrls: MutableList<String>? = null,
 
     @OneToMany(mappedBy = "board", cascade = [CascadeType.ALL], orphanRemoval = true)
-    var votes: MutableSet<Vote?>? = null,
+    var votes: MutableSet<Vote>? = null,
 
     @Schema(description = "등록자 ID/IP 주소")
     @CreatedBy

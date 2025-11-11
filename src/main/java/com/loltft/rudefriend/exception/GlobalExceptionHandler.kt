@@ -71,7 +71,7 @@ class GlobalExceptionHandler {
     @ExceptionHandler(AuthenticationException::class)
     fun handleAuthenticationException(
         e: AuthenticationException
-    ): ResponseEntity<ApiCommonResponse<Any?>?> {
+    ): ResponseEntity<ApiCommonResponse<Any>?> {
 
         log.error("AuthenticationException 발생 - 401 : {}", e.message, e)
 
@@ -83,7 +83,7 @@ class GlobalExceptionHandler {
 
         return ResponseEntity
             .status(HttpStatus.UNAUTHORIZED)
-            .body(ApiCommonResponse.fail<Any>(errorMessage))
+            .body(fail<Any>(errorMessage))
     }
 
     @ExceptionHandler(AccessDeniedException::class)

@@ -2,7 +2,6 @@ package com.loltft.rudefriend.entity
 
 import com.loltft.rudefriend.dto.board.BoardRequest
 import com.loltft.rudefriend.dto.enums.GameType
-import com.loltft.rudefriend.entity.converter.StringListConverter
 import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.persistence.*
 import org.hibernate.annotations.JdbcTypeCode
@@ -18,7 +17,7 @@ class Board(
     @JdbcTypeCode(Types.BINARY)
     @Column(columnDefinition = "BINARY(16)")
     @Schema(description = "Board PK")
-    var id: UUID? = null,
+    var id: UUID,
 
     @Column(length = 100)
     @Schema(description = "게시글 제목")
@@ -37,11 +36,6 @@ class Board(
     @Schema(description = "게시글 태그")
     var tags: MutableSet<String>? = null,
 
-    @Lob
-    @Convert(converter = StringListConverter::class)
-    @Schema(description = "S3에 업로드 된 파일 URL 배열 (이미지/동영상")
-    var fileUrls: MutableList<String>? = null,
-
     @OneToMany(mappedBy = "board", cascade = [CascadeType.ALL], orphanRemoval = true)
     var votes: MutableSet<Vote>? = null,
 
@@ -52,12 +46,19 @@ class Board(
     @Schema(description = "익명 사용자의 게시글 비밀번호")
     var password: String? = null,
 ) : BaseEntity() {
-    fun updateBoard(boardRequest: BoardRequest, newFileUrls: MutableList<String>) {
+    /**
+     * 요청 DTO 값으로 게시글을 수정한다.
+     *
+     * @param boardRequest 수정 요청 DTO
+     */
+    fun updateBoard(boardRequest: BoardRequest) {
+        if (!boardRequest.password.isNullOrBlank()) {
+            this.password = boardRequest.password
+        }
         this.title = boardRequest.title
         this.content = boardRequest.content
         this.gameType = boardRequest.gameType
         this.tags = boardRequest.tags
-        this.fileUrls = newFileUrls
         super.updatedAt = LocalDateTime.now()
     }
 }

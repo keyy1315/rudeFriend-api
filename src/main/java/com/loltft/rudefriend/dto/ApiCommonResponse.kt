@@ -26,11 +26,11 @@ data class ApiCommonResponse<T>(
          * @param data    응답 데이터
          * @return 단일 데이터만 존재하는 공통 응답 객체
          */
-        fun <T> ok(message: String?, data: T?): ApiCommonResponse<T?>? {
+        fun <T> ok(message: String?, data: T?, total: Long? = null): ApiCommonResponse<T?>? {
             return ApiCommonResponse(
                 status = OK,
                 message = message,
-                result = ApiResult.of(data)
+                result = ApiResult.of(data, total)
             )
         }
 

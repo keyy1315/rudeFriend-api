@@ -6,7 +6,6 @@ import org.springframework.web.multipart.MultipartFile
 import software.amazon.awssdk.core.sync.RequestBody
 import software.amazon.awssdk.services.s3.S3Client
 import software.amazon.awssdk.services.s3.model.DeleteObjectRequest
-import software.amazon.awssdk.services.s3.model.ObjectCannedACL
 import software.amazon.awssdk.services.s3.model.PutObjectRequest
 import java.io.IOException
 import java.util.*
@@ -19,33 +18,30 @@ class S3Service(
     @Value("\${cloud.aws.region.static}")
     private val region: String
 ) {
-    private val URL_PREFIX = "https://$bucketName.s3.$region.amazonaws.com/"
+
+    private val urlPrefix = "https://$bucketName.s3.$region.amazonaws.com/"
+
 
     @Throws(IOException::class)
-    fun uploadFiles(gameType: String, files: List<MultipartFile>): MutableList<String> {
-        val fileUrls = mutableListOf<String>()
+    fun uploadFile(gameType: String, file: MultipartFile, fileUuid: UUID): String {
+        val key = "$gameType/$fileUuid"
 
-        for (file in files) {
-            val key = gameType + "/" + UUID.randomUUID().toString()
+        val putObjectRequest = PutObjectRequest.builder()
+            .bucket(bucketName)
+            .key(key)
+            .contentType(file.contentType)
+            .build()
 
-            val putObjectRequest = PutObjectRequest.builder()
-                .bucket(bucketName)
-                .key(key)
-                .contentType(file.contentType)
-                .build()
+        s3Client.putObject(putObjectRequest, RequestBody.fromBytes(file.bytes))
 
-            s3Client.putObject(putObjectRequest, RequestBody.fromBytes(file.bytes))
-
-            fileUrls.add(URL_PREFIX + key)
-        }
-        return fileUrls
+        return urlPrefix + key
     }
 
     @Throws(IOException::class)
     fun deleteFiles(fileUrls: List<String>): MutableList<String> {
         val deletedFileUrls = mutableListOf<String>()
         for (url in fileUrls) {
-            val key = url.removePrefix(URL_PREFIX)
+            val key = url.removePrefix(urlPrefix)
 
             val deleteRequest = DeleteObjectRequest.builder()
                 .bucket(bucketName)
@@ -53,7 +49,7 @@ class S3Service(
                 .build()
 
             s3Client.deleteObject(deleteRequest)
-            deletedFileUrls.add(URL_PREFIX + key)
+            deletedFileUrls.add(urlPrefix + key)
         }
         return deletedFileUrls
     }

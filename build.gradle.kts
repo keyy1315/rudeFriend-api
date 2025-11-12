@@ -74,7 +74,7 @@ dependencies {
     implementation("software.amazon.awssdk:s3:2.35.11")
 }
 
-// ⭐ Kotlin 컴파일 설정
+// ========== Kotlin 설정 ==========
 tasks.withType<KotlinCompile> {
     compilerOptions {
         freeCompilerArgs.set(listOf("-Xjsr305=strict"))
@@ -82,38 +82,69 @@ tasks.withType<KotlinCompile> {
     }
 }
 
-// ⭐ QueryDSL Q클래스 생성 경로 설정
 kotlin {
     sourceSets.main {
         kotlin.srcDir("build/generated/source/kapt/main")
     }
 }
 
-// ⭐ kapt 설정
+// ========== kapt 설정 ==========
 kapt {
     arguments {
         arg("querydsl.generatedAnnotationClass", "jakarta.annotation.Generated")
     }
 }
 
-// Test 설정
-tasks.named<Test>("test") {
-    useJUnitPlatform()
-}
-
-// Spotless 설정
+// ========== Spotless 설정 ==========
 spotless {
     java {
-        eclipse().configFile(".idea/code-style/GoogleStyle_copy.xml")
+        target("src/**/*.java")
+        targetExclude("build/**", "**/generated/**")
+
         importOrder("java", "javax", "org", "com", "*")
-        removeUnusedImports()
+        formatAnnotations()
+        trimTrailingWhitespace()
+        endWithNewline()
+    }
+
+    kotlin {
+        target("src/**/*.kt")
+        targetExclude("build/**", "**/generated/**")
+
+        ktlint.additionalEditorconfig
+
+        trimTrailingWhitespace()
+        endWithNewline()
+    }
+
+    kotlinGradle {
+        target("*.gradle.kts")
+        ktlint()
     }
 }
 
+// ========== Task 의존성 설정 (에러 없는 방식) ==========
+
+// 1. spotless는 kapt 이후 실행
 tasks.named("spotlessApply") {
     dependsOn("kaptKotlin")
 }
 
-tasks.named("spotlessJava") {
-    dependsOn("kaptKotlin")
+// 2. compile은 spotless 이후 실행
+tasks.named("compileKotlin") {
+    dependsOn("spotlessApply")
+}
+
+tasks.named("compileJava") {
+    dependsOn("spotlessApply")
+}
+
+// 3. build 전 포맷 체크
+tasks.named("build") {
+    dependsOn("spotlessCheck")
+}
+
+// ========== Test 설정 ==========
+tasks.named<Test>("test") {
+    useJUnitPlatform()
 }

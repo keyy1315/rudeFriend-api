@@ -17,7 +17,7 @@ open class BaseEntity(
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Schema(description = "생성 일시")
     @Column(nullable = false, updatable = false)
-    var createdAt: LocalDateTime? = null,
+    var createdAt: LocalDateTime = LocalDateTime.now(),
 
     @LastModifiedDate
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")

@@ -33,5 +33,8 @@ data class BoardRequest(
     var tags: MutableSet<String>? = null,
 
     @Schema(description = "게임 타입 (LOL/TFT)")
-    val gameType: GameType = GameType.LOL
+    val gameType: GameType = GameType.LOL,
+
+    @Schema(description = "익명 사용자의 게시글 비밀번호")
+    val password: String? = null,
 )

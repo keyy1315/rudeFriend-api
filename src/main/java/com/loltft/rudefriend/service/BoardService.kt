@@ -22,6 +22,11 @@ class BoardService(
     private val passwordEncoder: PasswordEncoder,
     private val fileService: SaveFileService
 ) {
+    companion object {
+        private const val FROM_KEY = "from"
+        private const val TO_KEY = "to"
+    }
+
     private val convertDateToDateTime = ConvertDateToDateTime()
 
     /**
@@ -50,6 +55,7 @@ class BoardService(
     ): BoardResponse {
         val encodedPassword =
             boardRequest.password?.takeIf { it.isNotBlank() }?.let { passwordEncoder.encode(it) }
+        val voteItems = resolveVoteItems(boardRequest)
 
         val board = Board(
             id = UUID.randomUUID(),
@@ -59,7 +65,10 @@ class BoardService(
             tags = boardRequest.tags,
             createdBy = authUsername,
             password = encodedPassword,
-        )
+        ).apply {
+            voteEnabled = boardRequest.voteEnabled
+            this.voteItems = voteItems.toMutableList()
+        }
         boardRepository.save(board)
 
         val fullFileUrls = try {
@@ -100,7 +109,8 @@ class BoardService(
         if (!boardRequest.password.isNullOrBlank()) {
             boardRequest.password = passwordEncoder.encode(boardRequest.password)
         }
-        board.updateBoard(boardRequest)
+        val voteItems = resolveVoteItems(boardRequest)
+        board.updateBoard(boardRequest, voteItems)
 
         val saveFiles = fileService.findByBoardId(board.id).map { it.fullUrl }.toMutableList()
 
@@ -197,8 +207,21 @@ class BoardService(
         return Pair(entities, total)
     }
 
-    companion object {
-        private const val FROM_KEY = "from"
-        private const val TO_KEY = "to"
+    private fun resolveVoteItems(boardRequest: BoardRequest): List<String> {
+        if (!boardRequest.voteEnabled) {
+            return emptyList()
+        }
+
+        val normalized = boardRequest.voteItems
+            ?.map { it.trim() }
+            ?.filter { it.isNotBlank() }
+            ?.distinct()
+            ?: emptyList()
+
+        require(normalized.size >= 2) {
+            "투표 시스템을 사용하려면 최소 2개 이상의 투표 항목이 필요합니다."
+        }
+
+        return normalized
     }
 }

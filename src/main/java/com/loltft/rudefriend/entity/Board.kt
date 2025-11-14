@@ -3,7 +3,18 @@ package com.loltft.rudefriend.entity
 import com.loltft.rudefriend.dto.board.BoardRequest
 import com.loltft.rudefriend.dto.enums.GameType
 import io.swagger.v3.oas.annotations.media.Schema
-import jakarta.persistence.*
+import jakarta.persistence.CascadeType
+import jakarta.persistence.CollectionTable
+import jakarta.persistence.Column
+import jakarta.persistence.ElementCollection
+import jakarta.persistence.Entity
+import jakarta.persistence.EnumType
+import jakarta.persistence.Enumerated
+import jakarta.persistence.FetchType
+import jakarta.persistence.Id
+import jakarta.persistence.JoinColumn
+import jakarta.persistence.OneToMany
+import jakarta.persistence.Table
 import org.hibernate.annotations.JdbcTypeCode
 import org.springframework.data.annotation.CreatedBy
 import java.sql.Types
@@ -36,6 +47,16 @@ class Board(
     @Schema(description = "게시글 태그")
     var tags: MutableSet<String>? = null,
 
+    @Column(name = "vote_enabled", nullable = false)
+    @Schema(description = "투표 시스템 사용 여부")
+    var voteEnabled: Boolean = false,
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "board_vote_item", joinColumns = [JoinColumn(name = "board_id")])
+    @Column(name = "vote_item", length = 100)
+    @Schema(description = "투표 항목 목록")
+    var voteItems: MutableList<String> = mutableListOf(),
+
     @OneToMany(mappedBy = "board", cascade = [CascadeType.ALL], orphanRemoval = true)
     var votes: MutableSet<Vote>? = null,
 
@@ -51,7 +72,7 @@ class Board(
      *
      * @param boardRequest 수정 요청 DTO
      */
-    fun updateBoard(boardRequest: BoardRequest) {
+    fun updateBoard(boardRequest: BoardRequest, voteItems: List<String>) {
         if (!boardRequest.password.isNullOrBlank()) {
             this.password = boardRequest.password
         }
@@ -59,6 +80,11 @@ class Board(
         this.content = boardRequest.content
         this.gameType = boardRequest.gameType
         this.tags = boardRequest.tags
+        this.voteEnabled = boardRequest.voteEnabled
+        this.voteItems.clear()
+        if (boardRequest.voteEnabled) {
+            this.voteItems.addAll(voteItems)
+        }
         super.updatedAt = LocalDateTime.now()
     }
 }

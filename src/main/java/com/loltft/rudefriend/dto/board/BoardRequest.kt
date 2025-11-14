@@ -40,4 +40,10 @@ data class BoardRequest(
 
     @Schema(description = "익명 사용자의 게시글 비밀번호")
     var password: String? = null,
+
+    @Schema(description = "투표 시스템 사용 여부")
+    var voteEnabled: Boolean = false,
+
+    @Schema(description = "투표 항목 리스트")
+    var voteItems: MutableList<String>? = null,
 )

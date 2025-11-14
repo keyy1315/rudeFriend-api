@@ -46,14 +46,14 @@ class BoardController(private val boardService: BoardService) {
         )], required = true
     )
     @PostMapping(consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
-    /**
-     * 게시글 생성 요청을 처리한다.
-     *
-     * @param files           업로드할 파일 목록 (선택값)
-     * @param boardRequest    게시글 생성 DTO
-     * @param authentication  인증 객체 (작성자 정보)
-     * @return 생성된 게시글 응답 본문
-     */
+        /**
+         * 게시글 생성 요청을 처리한다.
+         *
+         * @param files           업로드할 파일 목록 (선택값)
+         * @param boardRequest    게시글 생성 DTO
+         * @param authentication  인증 객체 (작성자 정보)
+         * @return 생성된 게시글 응답 본문
+         */
     fun createBoard(
         @Parameter(
             description = "게시글 이미지/동영상", required = false
@@ -92,14 +92,14 @@ class BoardController(private val boardService: BoardService) {
         )], required = true
     )
     @PutMapping(value = ["/{id}"], consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
-    /**
-     * 게시글 수정 요청을 처리한다.
-     *
-     * @param id             수정할 게시글 ID
-     * @param files          새로 업로드할 파일 목록 (선택값)
-     * @param boardRequest   수정된 게시글 DTO
-     * @return 수정 결과 응답 본문
-     */
+        /**
+         * 게시글 수정 요청을 처리한다.
+         *
+         * @param id             수정할 게시글 ID
+         * @param files          새로 업로드할 파일 목록 (선택값)
+         * @param boardRequest   수정된 게시글 DTO
+         * @return 수정 결과 응답 본문
+         */
     fun updateBoard(
         @PathVariable id: UUID,
         @Parameter(
@@ -119,13 +119,13 @@ class BoardController(private val boardService: BoardService) {
 
     @Operation(summary = "게시글 비밀번호 검증", description = "익명 사용자의 게시글 비밀번호를 검증합니다.")
     @PostMapping("/{id}/password")
-    /**
-     * 익명 게시글 비밀번호 검증 요청을 처리한다.
-     *
-     * @param id         검증 대상 게시글 ID
-     * @param password   사용자가 입력한 비밀번호
-     * @return 비밀번호 일치 여부
-     */
+        /**
+         * 익명 게시글 비밀번호 검증 요청을 처리한다.
+         *
+         * @param id         검증 대상 게시글 ID
+         * @param password   사용자가 입력한 비밀번호
+         * @return 비밀번호 일치 여부
+         */
     fun checkBoardPassword(
         @PathVariable id: UUID, @RequestBody password: String
     ): ResponseEntity<ApiCommonResponse<Boolean?>?> {
@@ -135,13 +135,13 @@ class BoardController(private val boardService: BoardService) {
 
     @Operation(summary = "게시글 삭제", description = "게시글을 삭제합니다.")
     @DeleteMapping("/{id}")
-    /**
-     * 게시글 삭제 요청을 처리한다.
-     *
-     * @param id             삭제할 게시글 ID
-     * @param authentication 인증 객체 (요청자 정보)
-     * @return 삭제 성공 응답
-     */
+        /**
+         * 게시글 삭제 요청을 처리한다.
+         *
+         * @param id             삭제할 게시글 ID
+         * @param authentication 인증 객체 (요청자 정보)
+         * @return 삭제 성공 응답
+         */
     fun deleteBoard(
         @PathVariable id: UUID,
         authentication: Authentication
@@ -152,12 +152,12 @@ class BoardController(private val boardService: BoardService) {
 
     @Operation(summary = "게시글 상세 조회", description = "게시글을 상세 조회합니다.")
     @GetMapping("/{id}")
-    /**
-     * 단일 게시글 상세 조회를 처리한다.
-     *
-     * @param id 조회할 게시글 ID
-     * @return 조회된 게시글 응답
-     */
+        /**
+         * 단일 게시글 상세 조회를 처리한다.
+         *
+         * @param id 조회할 게시글 ID
+         * @return 조회된 게시글 응답
+         */
     fun getBoard(@PathVariable id: UUID): ResponseEntity<ApiCommonResponse<BoardResponse?>?> {
         val boardResponse = boardService.getBoard(id)
         return ResponseEntity.ok(ok("게시글 상세 조회 ID : $id", boardResponse))
@@ -165,19 +165,19 @@ class BoardController(private val boardService: BoardService) {
 
     @Operation(summary = "게시글 목록 조회", description = "게시글 목록을 조회합니다.")
     @GetMapping
-    /**
-     * 게시글 목록 조회를 처리한다.
-     *
-     * @param dateOption  조회 기준(등록/수정)
-     * @param dateFrom    조회 시작일
-     * @param dateTo      조회 종료일
-     * @param tags        태그 필터
-     * @param author      작성자 필터
-     * @param search      제목/내용 검색어
-     * @param gameType    게임 타입 필터
-     * @param pageNo      조회 페이지 번호
-     * @return 조회된 게시글 리스트와 전체 건수
-     */
+        /**
+         * 게시글 목록 조회를 처리한다.
+         *
+         * @param dateOption  조회 기준(등록/수정)
+         * @param dateFrom    조회 시작일
+         * @param dateTo      조회 종료일
+         * @param tags        태그 필터
+         * @param author      작성자 필터
+         * @param search      제목/내용 검색어
+         * @param gameType    게임 타입 필터
+         * @param pageNo      조회 페이지 번호
+         * @return 조회된 게시글 리스트와 전체 건수
+         */
     fun getBoards(
         @RequestParam(required = false) dateOption: DateOption?,
         @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") @Schema(description = "등록일/수정일 시작일") dateFrom: LocalDate?,

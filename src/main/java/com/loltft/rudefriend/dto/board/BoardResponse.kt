@@ -27,6 +27,12 @@ data class BoardResponse(
 
     @Schema(description = "작성자 Ip/memberId")
     var createdBy: String? = null,
+
+    @Schema(description = "투표 시스템 사용 여부")
+    var voteEnabled: Boolean = false,
+
+    @Schema(description = "투표 항목 리스트")
+    var voteItems: MutableList<String>? = null,
 ) {
     companion object {
         /**
@@ -45,6 +51,8 @@ data class BoardResponse(
                 tags = board.tags
                 gameType = board.gameType
                 createdBy = board.createdBy
+                voteEnabled = board.voteEnabled
+                voteItems = board.voteItems.toMutableList()
                 fileUrls = fullFileUrls
             }
         }

@@ -32,6 +32,18 @@ data class BoardRequest(
     @Schema(description = "게시글 태그 배열")
     var tags: MutableSet<String>? = null,
 
+    @Schema(description = "삭제 할 파일 URL 목록")
+    var shouldDeleteFileUrls: MutableList<String>? = null,
+
     @Schema(description = "게임 타입 (LOL/TFT)")
-    val gameType: GameType = GameType.LOL
+    var gameType: GameType = GameType.LOL,
+
+    @Schema(description = "익명 사용자의 게시글 비밀번호")
+    var password: String? = null,
+
+    @Schema(description = "투표 시스템 사용 여부")
+    var voteEnabled: Boolean = false,
+
+    @Schema(description = "투표 항목 리스트")
+    var voteItems: MutableList<String>? = null,
 )

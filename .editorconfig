@@ -1,0 +1,46 @@
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+[*.kt]
+indent_size = 4
+indent_style = space
+max_line_length = 120
+tab_width = 4
+
+# KDoc/JavaDoc 관련 설정
+ij_kotlin_align_multiline_parameters_in_calls = true
+ij_kotlin_kdoc_align_param_comments = true
+ij_kotlin_kdoc_align_exception_comments = true
+
+# KDoc 들여쓰기
+ij_kotlin_doc_indent_on_continuation = true
+ij_kotlin_doc_preserve_blank_lines = false
+
+# KDoc 정렬 및 순서
+ij_kotlin_doc_param_description_on_new_line = false
+ij_kotlin_doc_exception_description_on_new_line = false
+
+# 파라미터 정렬
+ij_kotlin_parameter_annotation_wrap = off
+ij_kotlin_align_multiline_parameters = true
+
+# ktlint 규칙
+ktlint_standard_no-wildcard-imports = disabled
+ktlint_standard_trailing-comma-on-call-site = disabled
+ktlint_standard_trailing-comma-on-declaration-site = disabled
+
+# KDoc 관련 ktlint 규칙
+ktlint_kdoc_standard_kdoc-tag-order = enabled
+ktlint_kdoc_standard_kdoc-blank-line-before-tag = enabled
+ktlint_kdoc_standard_kdoc-no-blank-line-before-tag = disabled
+
+[*.{kt,kts}]
+ij_kotlin_code_style_defaults = KOTLIN_OFFICIAL
+
+[*.gradle.kts]
+indent_size = 4

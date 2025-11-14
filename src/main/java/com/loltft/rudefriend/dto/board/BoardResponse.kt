@@ -1,10 +1,7 @@
 package com.loltft.rudefriend.dto.board
 
 import com.loltft.rudefriend.dto.enums.GameType
-import com.loltft.rudefriend.dto.member.MemberResponse
 import com.loltft.rudefriend.entity.Board
-import com.loltft.rudefriend.entity.Member
-import com.loltft.rudefriend.entity.game.GameAccountInfo
 import io.swagger.v3.oas.annotations.media.Schema
 import java.util.*
 
@@ -27,17 +24,36 @@ data class BoardResponse(
 
     @Schema(description = "게시글 이미지 URL 목록")
     var fileUrls: MutableList<String>? = null,
+
+    @Schema(description = "작성자 Ip/memberId")
+    var createdBy: String? = null,
+
+    @Schema(description = "투표 시스템 사용 여부")
+    var voteEnabled: Boolean = false,
+
+    @Schema(description = "투표 항목 리스트")
+    var voteItems: MutableList<String>? = null,
 ) {
     companion object {
+        /**
+         * 게시글 엔티티를 응답 DTO로 변환한다.
+         *
+         * @param board         게시글 엔티티
+         * @param fullFileUrls  첨부 파일 전체 URL 목록
+         * @return 변환된 게시글 응답 DTO
+         */
         @JvmStatic
-        fun of(board: Board): BoardResponse {
+        fun of(board: Board, fullFileUrls: MutableList<String>?): BoardResponse {
             return BoardResponse().apply {
                 id = board.id
                 title = board.title
                 content = board.content
                 tags = board.tags
                 gameType = board.gameType
-                fileUrls = board.fileUrls
+                createdBy = board.createdBy
+                voteEnabled = board.voteEnabled
+                voteItems = board.voteItems.toMutableList()
+                fileUrls = fullFileUrls
             }
         }
     }

@@ -223,10 +223,6 @@ class MemberService(
         }
     }
 
-    fun findByMemberId(memberId: String?): Member? {
-        return memberRepository.findByMemberId(memberId)?.orElse(null)
-    }
-
     companion object {
         private const val FROM = "from"
         private const val TO = "to"

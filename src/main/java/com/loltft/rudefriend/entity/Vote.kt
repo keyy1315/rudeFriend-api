@@ -1,8 +1,14 @@
 package com.loltft.rudefriend.entity
 
-import com.loltft.rudefriend.entity.enums.VoteType
 import io.swagger.v3.oas.annotations.media.Schema
-import jakarta.persistence.*
+import jakarta.persistence.Column
+import jakarta.persistence.Entity
+import jakarta.persistence.FetchType
+import jakarta.persistence.Id
+import jakarta.persistence.JoinColumn
+import jakarta.persistence.ManyToOne
+import jakarta.persistence.Table
+import jakarta.persistence.UniqueConstraint
 import org.hibernate.annotations.JdbcTypeCode
 import java.sql.Types
 import java.util.*
@@ -36,8 +42,7 @@ class Vote(
     @Schema(description = "익명 사용자 IP 주소")
     var ipAddress: String? = null,
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    @Schema(description = "투표 타입 (UP, DOWN)")
-    var voteType: VoteType? = null
+    @Column(name = "vote_item", length = 100)
+    @Schema(description = "선택한 투표 항목")
+    var voteItem: String? = null
 )

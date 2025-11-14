@@ -20,14 +20,13 @@ import org.springframework.util.StringUtils
 import java.util.function.Supplier
 
 @Service
-class AuthService {
-    private val authenticationManager: AuthenticationManager? = null
-    private val tokenProvider: JwtTokenProvider? = null
-    private val tokenHashUtil: TokenHashUtil? = null
-    private val jwtProperties: JwtProperties? = null
-
+class AuthService(
+    private val authenticationManager: AuthenticationManager,
+    private val tokenProvider: JwtTokenProvider,
+    private val tokenHashUtil: TokenHashUtil,
+    private val jwtProperties: JwtProperties,
     private val memberRepository: MemberRepository? = null
-
+) {
     /**
      * 로그인 인증 이후 발급 된 refreshToken을 DB에 저장
      *

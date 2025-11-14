@@ -44,6 +44,42 @@ rudeFriend API는 League of Legends 및 TFT 이용자들의 친구 매칭과 소
 - 브랜치 전략: `develop` → 기능 브랜치 → PR
 - Codex 에이전트: `api_agent`, `infra_agent`, `docs_agent`, `review_agent`
 
+## 게시글 투표 사용법
+1. **투표 활성화 게시글 작성**  
+   게시글 생성 시 `voteEnabled`를 `true`로 두고 최소 2개 이상의 `voteItems` 배열을 전달합니다.
+   ```json
+   {
+     "title": "오늘의 듀오 타입은?",
+     "content": "솔랭/자유랭 중 골라주세요.",
+     "voteEnabled": true,
+     "voteItems": ["솔로 랭크", "자유 랭크"]
+   }
+   ```
+2. **투표 요청**  
+   `POST /boards/{boardId}/vote`에 `VoteRequest` 본문을 전송합니다. 로그인 사용자는 `Authorization` 헤더를 포함하고, 익명 사용자는 비밀번호 검증 후 호출할 수 있습니다.
+   ```bash
+   curl -X POST https://api.example.com/boards/{boardId}/vote \
+     -H "Content-Type: application/json" \
+     -H "Authorization: Bearer <JWT>" \
+     -d '{"voteItem": "솔로 랭크"}'
+   ```
+3. **응답 형식**  
+   `VoteResultResponse`에는 사용자가 선택한 항목(`selectedItem`), 전체 항목별 집계(`voteCounts`), 총 투표 수(`totalVotes`)가 포함돼 있어 바로 UI에 반영할 수 있습니다.
+   ```json
+   {
+     "message": "투표가 반영되었습니다.",
+     "data": {
+       "boardId": "0e6c8371-5dd9-4b06-9d0f-9d45c9fdc6c1",
+       "selectedItem": "솔로 랭크",
+       "voteCounts": {
+         "솔로 랭크": 8,
+         "자유 랭크": 3
+       },
+       "totalVotes": 11
+     }
+   }
+   ```
+
 ## 배포/운영
 - Dockerfile 및 docker-compose로 컨테이너 실행을 지원합니다.
 - CI/CD, 환경 변수, 배포 자동화는 `infra_agent`와 Context7 MCP가 담당합니다.

@@ -47,6 +47,15 @@ class GlobalExceptionHandler {
             .body<ApiCommonResponse<String?>?>(fail<String?>(e.message))
     }
 
+    @ExceptionHandler(IllegalArgumentException::class)
+    fun handleIllegalArgumentException(
+        e: IllegalArgumentException
+    ): ResponseEntity<ApiCommonResponse<String?>?> {
+        log.error("IllegalArgumentException 오류 status - 400 : {}", e.message, e)
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+            .body<ApiCommonResponse<String?>?>(fail<String?>(e.message))
+    }
+
     /** ============================ 인증 인가 에러 ============================ */
     @ExceptionHandler(UsernameNotFoundException::class)
     fun handleUsernameNotFoundException(

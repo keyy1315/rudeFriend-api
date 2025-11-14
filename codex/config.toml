@@ -1,2 +1,93 @@
-author_name = "Codex"
-author_email = "codex@example.com"
+model = "gpt-5.1-codex"
+[projects."/mnt/c/Users/SAMSUNG/main-project/rudeFriend/rudeFriend-api"]
+trust_level = "trusted"
+
+[projects."/home/key"]
+trust_level = "trusted"
+
+# ───────────────────────────────────────────────
+# Codex 자동 주석 생성 규칙
+# 모든 에이전트(API/Infra/Docs)에 공통 적용
+# ───────────────────────────────────────────────
+[codex.codegen]
+enable_auto_comments = true
+comment_style = "kdoc"
+
+# 코드 생성 규칙 설명
+comment_rule = """
+모든 Kotlin 코드 생성 시 다음 규칙을 반드시 준수한다:
+
+1. 주석(KDoc) 자동 생성
+   - 생성하는 모든 public class, data class, interface, function, private 함수에 KDoc을 자동으로 생성한다.
+   - Codex 판단으로 추가하거나 삭제할 수 있다.
+
+2. 파라미터 설명(@param) 정렬 규칙
+   - @param 줄의 '파라미터 이름'은 수평으로 정렬한다. 즉, 가장 긴 파라미터 이름 길이에 맞춰 스페이스를 정렬한다.
+   - 예시:
+
+     /**
+      * 친구 요청을 전송한다.
+      *
+      * @param senderId	요청을 보낸 사용자 ID
+      * @param receiverId	요청을 받을 사용자 ID
+      * @return 성공 여부
+      */
+
+3. 반환값 설명(@return)
+   - 반환 타입이 존재하는 경우 @return 설명을 반드시 작성한다.
+   - 반환 타입이 Unit일 경우 @return 작성하지 않는다.
+
+4. 엔티티/DTO 주석
+   - 각 필드의 의미를 문장형으로 설명한다.
+   - nullable 필드에는 언제 null이 될 수 있는지 명확히 기술한다.
+
+5. controller/service/repository 주석
+   - 함수의 핵심 목적, 트랜잭션 의도, 검증 로직의 의미 등을 명확히 설명한다.
+   - 외부 시스템(Context7, Notion 등)과 상호작용 시 해당 내용을 주석에 포함한다.
+
+6. 기존 코드 리팩터링 시
+   - 코드 변경사항에 따라 KDoc 주석도 반드시 업데이트한다.
+"""
+
+# ───────────────────────────────────────────────
+# Git 커밋 메시지 및 PullRequest 규칙
+# ───────────────────────────────────────────────
+[codex.git]
+force_korean_commit_messages = true
+commit_message_rule = """
+모든 커밋 메시지는 반드시 자연스러운 한국어로 작성한다.
+영어 메시지를 입력받은 경우라도 다음 규칙에 따라 한국어로 자동 변환한다:
+
+- 제목(Subject)은 50자 이내의 명확한 한국어 문장으로 요약한다.
+- 본문(Body)이 있을 경우 변경 이유, 영향도, 관련 API를 한국어로 작성한다.
+- 예시:
+
+  feat: 게시글 투표 기능 추가
+
+  - 게시글 생성/수정 시 투표 항목을 설정할 수 있는 기능 추가
+  - 최소 2개 이상의 투표 항목 검증 로직 포함
+  - VoteType 제거 후 문자열 기반 Vote 엔티티로 변경
+"""
+
+pull_request_rule = """
+모든 pull request의 제목과 내용은 반드시 자연스로운 한국어로 작성한다.
+영어 메시지를 입력받은 경우라도 다음 규칙에 따라 한국어로 자동 변환한다:
+
+- 제목(Subject)은 50자 이내의 명확한 한국어 문장으로 요약한다.
+- 본문(Body)에는 새롭게 추가 된 기능, 수정 된 기능, 테스트 진행 사항 및 결과, 리팩토링 했을 경우 리팩토링 이후 개선 된 비용에 대해 작성한다.
+- 예시:
+
+[API] 게시글 기능 구현 및 투표 시스템 추가
+
+## 신규 기능
+- 게시글 생성/수정 시 투표 시스템을 사용할지 여부를 선택할 수 있는 `voteEnabled` 플래그와 투표 항목 리스트(`voteItems`)를 추가했습니다.
+- 투표 기능을 활성화한 게시글은 응답 DTO 및 조회 API에서도 항목 정보를 함께 내려주도록 했습니다.
+
+## 수정 사항
+- `Board` 엔티티와 서비스 로직을 리팩터링하여 투표 항목을 별도 테이블에 저장하고, 최소 2개 이상의 항목이 존재하는지 검증합니다.
+- 투표 선택지를 enum으로 고정하던 `VoteType`을 제거하고, `Vote` 엔티티가 실제 선택한 항목 문자열을 저장하도록 변경했습니다.
+- Board 관련 컨트롤러와 DTO들을 모두 새로운 스펙에 맞게 업데이트했습니다.
+
+## 테스트
+- 로컬 환경에서 `JAVA_HOME` 미설정으로 인해 Gradle 테스트를 실행하지 못했습니다.
+"""

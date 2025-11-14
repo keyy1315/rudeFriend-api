@@ -4,8 +4,13 @@ import com.loltft.rudefriend.dto.board.BoardRequest
 import com.loltft.rudefriend.dto.board.BoardResponse
 import com.loltft.rudefriend.dto.enums.DateOption
 import com.loltft.rudefriend.dto.enums.GameType
+import com.loltft.rudefriend.dto.vote.VoteResultResponse
 import com.loltft.rudefriend.entity.Board
+import com.loltft.rudefriend.entity.Member
+import com.loltft.rudefriend.entity.Vote
 import com.loltft.rudefriend.repository.board.BoardRepository
+import com.loltft.rudefriend.repository.member.MemberRepository
+import com.loltft.rudefriend.repository.vote.VoteRepository
 import com.loltft.rudefriend.utils.ConvertDateToDateTime
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.security.crypto.password.PasswordEncoder
@@ -19,6 +24,8 @@ import java.util.UUID
 @Transactional
 class BoardService(
     private val boardRepository: BoardRepository,
+    private val memberRepository: MemberRepository,
+    private val voteRepository: VoteRepository,
     private val passwordEncoder: PasswordEncoder,
     private val fileService: SaveFileService
 ) {
@@ -207,6 +214,59 @@ class BoardService(
         return Pair(entities, total)
     }
 
+    fun voteOnBoard(
+        boardId: UUID,
+        voteItem: String?,
+        memberUsername: String?,
+        ipAddress: String
+    ): VoteResultResponse {
+        val board = findById(boardId)
+
+        require(board.voteEnabled) {
+            "투표 기능이 비활성화된 게시글입니다."
+        }
+
+        val sanitizedVoteItem = voteItem?.trim()?.takeIf { it.isNotBlank() }
+            ?: throw IllegalArgumentException("투표 항목은 필수입니다.")
+
+        val matchedItem = board.voteItems
+            .firstOrNull { it.equals(sanitizedVoteItem, ignoreCase = true) }
+            ?: throw IllegalArgumentException("존재하지 않는 투표 항목입니다.")
+
+        val member = resolveMember(memberUsername)
+        val normalizedIp = ipAddress.ifBlank { "unknown" }
+
+        val vote = when {
+            member != null -> voteRepository.findByBoardAndMember(board, member)
+            else -> voteRepository.findByBoardIdAndIpAddress(boardId, normalizedIp)
+        }
+
+        if (vote != null) {
+            vote.voteItem = matchedItem
+            vote.ipAddress = normalizedIp
+        } else {
+            voteRepository.save(
+                Vote(
+                    id = UUID.randomUUID(),
+                    board = board,
+                    member = member,
+                    ipAddress = normalizedIp,
+                    voteItem = matchedItem
+                )
+            )
+        }
+
+        val summary = buildVoteSummary(board, boardId)
+        val totalVotes = summary.values.sum()
+
+        return VoteResultResponse(
+            boardId = board.id,
+            selectedItem = matchedItem,
+            voteCounts = summary,
+            totalVotes = totalVotes
+        )
+    }
+
     private fun resolveVoteItems(boardRequest: BoardRequest): List<String> {
         if (!boardRequest.voteEnabled) {
             return emptyList()
@@ -223,5 +283,27 @@ class BoardService(
         }
 
         return normalized
+    }
+
+    private fun resolveMember(memberUsername: String?): Member? {
+        if (memberUsername.isNullOrBlank()) {
+            return null
+        }
+
+        val optional = memberRepository.findByMemberId(memberUsername)
+        return optional?.orElse(null)
+    }
+
+    private fun buildVoteSummary(board: Board, boardId: UUID): Map<String, Long> {
+        val counts = voteRepository.countVoteGroupByItem(boardId)
+            .associate { it.voteItem to it.count }
+            .toMutableMap()
+
+        board.voteItems.forEach { item ->
+            counts.putIfAbsent(item, 0L)
+        }
+
+        return board.voteItems
+            .associateWith { counts[it] ?: 0L }
     }
 }

@@ -6,6 +6,8 @@ import com.loltft.rudefriend.dto.board.BoardRequest
 import com.loltft.rudefriend.dto.board.BoardResponse
 import com.loltft.rudefriend.dto.enums.DateOption
 import com.loltft.rudefriend.dto.enums.GameType
+import com.loltft.rudefriend.dto.vote.VoteRequest
+import com.loltft.rudefriend.dto.vote.VoteResultResponse
 import com.loltft.rudefriend.entity.enums.Role
 import com.loltft.rudefriend.service.BoardService
 import com.loltft.rudefriend.utils.SwaggerBody
@@ -16,6 +18,8 @@ import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Encoding
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.tags.Tag
+import jakarta.servlet.http.HttpServletRequest
+import jakarta.validation.Valid
 import jakarta.validation.constraints.Min
 import org.springframework.format.annotation.DateTimeFormat
 import org.springframework.http.MediaType
@@ -200,5 +204,46 @@ class BoardController(private val boardService: BoardService) {
         )
 
         return ResponseEntity.ok(ok("게시글 목록 조회 성공", boards, total))
+    }
+
+    @Operation(summary = "게시글 투표", description = "투표 시스템이 활성화된 게시글에 투표합니다.")
+    @PostMapping("/{id}/vote")
+    fun voteBoard(
+        @PathVariable id: UUID,
+        @RequestBody @Valid voteRequest: VoteRequest,
+        authentication: Authentication,
+        request: HttpServletRequest
+    ): ResponseEntity<ApiCommonResponse<VoteResultResponse?>?> {
+        val isAnonymous =
+            authentication.authorities?.any { it.authority == Role.ANONYMOUS.value } == true
+
+        val memberUsername = if (isAnonymous) {
+            null
+        } else {
+            (authentication.principal as? UserDetails)?.username ?: authentication.name
+        }
+
+        val ipAddress = extractClientIp(request)
+        val result = boardService.voteOnBoard(id, voteRequest.voteItem, memberUsername, ipAddress)
+        return ResponseEntity.ok(ok("투표가 반영되었습니다.", result))
+    }
+
+    private fun extractClientIp(request: HttpServletRequest): String {
+        val headerCandidates = listOf(
+            "X-Forwarded-For",
+            "Proxy-Client-IP",
+            "WL-Proxy-Client-IP",
+            "HTTP_CLIENT_IP",
+            "HTTP_X_FORWARDED_FOR"
+        )
+
+        headerCandidates.forEach { header ->
+            val candidate = request.getHeader(header)
+            if (!candidate.isNullOrBlank() && !"unknown".equals(candidate, ignoreCase = true)) {
+                return candidate.split(",")[0].trim()
+            }
+        }
+
+        return request.remoteAddr ?: "unknown"
     }
 }

@@ -1,6 +1,3 @@
-author_name = "Codex"
-author_email = "codex@example.com"
-
 model = "gpt-5.1-codex"
 [projects."/mnt/c/Users/SAMSUNG/main-project/rudeFriend/rudeFriend-api"]
 trust_level = "trusted"

@@ -9,7 +9,6 @@ import com.loltft.rudefriend.entity.Board
 import com.loltft.rudefriend.entity.Member
 import com.loltft.rudefriend.entity.Vote
 import com.loltft.rudefriend.repository.board.BoardRepository
-import com.loltft.rudefriend.repository.member.MemberRepository
 import com.loltft.rudefriend.repository.vote.VoteRepository
 import com.loltft.rudefriend.utils.ConvertDateToDateTime
 import org.springframework.security.access.AccessDeniedException
@@ -18,16 +17,16 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.multipart.MultipartFile
 import java.time.LocalDate
-import java.util.UUID
+import java.util.*
 
 @Service
 @Transactional
 class BoardService(
     private val boardRepository: BoardRepository,
-    private val memberRepository: MemberRepository,
     private val voteRepository: VoteRepository,
     private val passwordEncoder: PasswordEncoder,
-    private val fileService: SaveFileService
+    private val fileService: SaveFileService,
+    private val memberService: MemberService
 ) {
     companion object {
         private const val FROM_KEY = "from"
@@ -58,8 +57,10 @@ class BoardService(
      * @return 생성된 게시글 응답 DTO
      */
     fun createBoard(
-        files: List<MultipartFile>, boardRequest: BoardRequest, authUsername: String
+        files: List<MultipartFile>, boardRequest: BoardRequest, authUsername: String, isAnonymous: Boolean
     ): BoardResponse {
+        if (isAnonymous && boardRequest.password.isNullOrBlank()) throw IllegalArgumentException("게시글 비밀번호는 필수값 입니다.")
+
         val encodedPassword =
             boardRequest.password?.takeIf { it.isNotBlank() }?.let { passwordEncoder.encode(it) }
         val voteItems = resolveVoteItems(boardRequest)
@@ -214,11 +215,20 @@ class BoardService(
         return Pair(entities, total)
     }
 
+    /**
+     * 투표 기능이 활성화된 게시글에 대해 사용자의 선택을 반영한다.
+     *
+     * @param boardId        투표 대상 게시글 ID
+     * @param voteItem       사용자가 선택한 항목
+     * @param userInfo       로그인 사용자의 ID (익명일 경우 IP 주소)
+     * @param isAnonymous      익명 사용자 여부
+     * @return 현재 집계된 투표 요약 정보
+     */
     fun voteOnBoard(
         boardId: UUID,
         voteItem: String?,
-        memberUsername: String?,
-        ipAddress: String
+        userInfo: String?,
+        isAnonymous: Boolean
     ): VoteResultResponse {
         val board = findById(boardId)
 
@@ -233,24 +243,23 @@ class BoardService(
             .firstOrNull { it.equals(sanitizedVoteItem, ignoreCase = true) }
             ?: throw IllegalArgumentException("존재하지 않는 투표 항목입니다.")
 
-        val member = resolveMember(memberUsername)
-        val normalizedIp = ipAddress.ifBlank { "unknown" }
+        val member = if (isAnonymous) null else resolveMember(userInfo)
 
         val vote = when {
             member != null -> voteRepository.findByBoardAndMember(board, member)
-            else -> voteRepository.findByBoardIdAndIpAddress(boardId, normalizedIp)
+            else -> voteRepository.findByBoardIdAndIpAddress(boardId, userInfo.toString())
         }
 
         if (vote != null) {
             vote.voteItem = matchedItem
-            vote.ipAddress = normalizedIp
+            vote.ipAddress = userInfo
         } else {
             voteRepository.save(
                 Vote(
                     id = UUID.randomUUID(),
                     board = board,
                     member = member,
-                    ipAddress = normalizedIp,
+                    ipAddress = if (member == null) userInfo else null,
                     voteItem = matchedItem
                 )
             )
@@ -267,6 +276,13 @@ class BoardService(
         )
     }
 
+    /**
+     * 투표 기능이 켜진 게시글 요청에서 유효한 투표 항목 리스트를 생성한다.
+     *
+     * @param boardRequest 투표 설정이 포함된 게시글 요청 본문
+     * @return 트리밍/중복 제거된 투표 항목 리스트
+     * @throws IllegalArgumentException 항목 수가 2개 미만일 때
+     */
     private fun resolveVoteItems(boardRequest: BoardRequest): List<String> {
         if (!boardRequest.voteEnabled) {
             return emptyList()
@@ -285,15 +301,27 @@ class BoardService(
         return normalized
     }
 
+    /**
+     * 요청한 사용자명이 존재하면 회원 엔티티를 조회한다.
+     *
+     * @param memberUsername 인증 사용자 ID 또는 null
+     * @return 조회된 회원 엔티티
+     */
     private fun resolveMember(memberUsername: String?): Member? {
         if (memberUsername.isNullOrBlank()) {
             return null
         }
 
-        val optional = memberRepository.findByMemberId(memberUsername)
-        return optional?.orElse(null)
+        return memberService.findByMemberId(memberUsername)
     }
 
+    /**
+     * 게시글의 전체 투표 현황을 항목별 득표수로 구성한다.
+     *
+     * @param board     투표 항목 정보를 가진 게시글 엔티티
+     * @param boardId   투표 내역을 조회할 게시글 ID
+     * @return 항목명과 누적 득표수를 매핑한 결과
+     */
     private fun buildVoteSummary(board: Board, boardId: UUID): Map<String, Long> {
         val counts = voteRepository.countVoteGroupByItem(boardId)
             .associate { it.voteItem to it.count }

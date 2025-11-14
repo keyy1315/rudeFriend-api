@@ -7,8 +7,8 @@ spring:
   datasource:
     driver-class-name: org.mariadb.jdbc.Driver
     url: ${DATABASE_URL:jdbc:mariadb://localhost:3306/rudefriend}
-    username: ${DATABASE_USERNAME}
-    password: ${DATABASE_PASSWORD}
+    username: ${DATABASE_USERNAME:root}
+    password: ${DATABASE_PASSWORD:root}
     hikari:
       maximum-pool-size: ${DB_POOL_SIZE:5}
 
@@ -27,12 +27,12 @@ spring:
 cloud:
   aws:
     s3:
-      bucket: ${AWS_S3_BUCKET}
+      bucket: ${AWS_S3_BUCKET:test-bucket}
     region:
-      static: ${AWS_REGION}
+      static: ${AWS_REGION:ap-northeast-2}
     credentials:
-      access-key: ${AWS_ACCESS_KEY}
-      secret-key: ${AWS_SECRET_ACCESS_KEY}
+      access-key: ${AWS_ACCESS_KEY:kkkkkkk}
+      secret-key: ${AWS_SECRET_ACCESS_KEY:kkkkkkk}
 
 logging:
   level:
@@ -54,8 +54,8 @@ springdoc:
 
 
 jwt:
-  secret: ${JWT_SECRET}
-  hash-secret: ${JWT_HASH_SECRET}
+  secret: ${JWT_SECRET:my-jwt-secret}
+  hash-secret: ${JWT_HASH_SECRET:my-jwt-hash-secret}
 
 server:
   port: 8081

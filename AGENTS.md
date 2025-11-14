@@ -113,6 +113,17 @@ Kotlin과 Spring Boot를 기반으로 하며, 사용자 인증, 친구 관리, �
 
 ---
 
+## ✍️ 커밋 서명 규칙
+- 에이전트가 커밋을 생성할 때는 반드시 `codex/bin/codex-commit.sh` 스크립트를 통해 실행하여 작성자 정보를 `Codex <codex@example.com>`으로 고정한다.
+- 스크립트는 `codex/config.toml`에 설정된 `author_name`, `author_email` 값을 읽어 `GIT_AUTHOR_*`, `GIT_COMMITTER_*` 환경 변수를 자동 설정한다.
+- 사용 방법:
+  ```bash
+  ./codex/bin/codex-commit.sh -m "commit message"
+  ```
+- 사용자가 직접 커밋할 때는 일반적인 `git commit`을 사용하여 개인 계정 이름/이메일을 유지한다.
+
+---
+
 > 📘 문서 정보  
 > 프로젝트: rudeFriend-api  
 > MCP 구성: github, notionApi, context7  

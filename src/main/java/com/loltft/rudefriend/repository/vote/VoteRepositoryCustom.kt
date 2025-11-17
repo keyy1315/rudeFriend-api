@@ -39,4 +39,3 @@ interface VoteRepositoryCustom {
      */
     fun applySummaryDelta(boardId: UUID, voteItem: String, delta: Long): Long
 }
-

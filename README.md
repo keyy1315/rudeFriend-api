@@ -44,6 +44,15 @@ rudeFriend API는 League of Legends 및 TFT 이용자들의 친구 매칭과 소
 - 브랜치 전략: `develop` → 기능 브랜치 → PR
 - Codex 에이전트: `api_agent`, `infra_agent`, `docs_agent`, `review_agent`
 
+## 라인 엔딩 & Git 설정
+WSL이나 Windows 환경에서 애플리케이션을 실행하거나 IDE가 파일을 저장하면 LF(Line Feed)가 CRLF(Carriage Return + Line Feed)로 자동 변환되어 모든 Kotlin/Java 파일이 변경된 것으로 표시될 수 있습니다. 다음 설정을 적용해 불필요한 `git status` 변화를 막을 수 있습니다.
+
+1. `.gitattributes`에 `* text=auto eol=lf` 또는 `*.kt text eol=lf` 같은 규칙을 추가해 모든 소스 파일을 LF로 강제합니다.
+2. 로컬 Git 설정을 `git config --global core.autocrlf input`으로 맞추면 체크아웃 시 LF를 유지합니다.
+3. Windows의 NTFS 마운트(`/mnt/c`) 대신 WSL 기본 파일시스템에 클론하면 CRLF 변환 가능성이 줄어듭니다.
+
+위 설정을 적용한 뒤 `git add --renormalize .`를 실행하면 이미 CRLF로 바뀐 파일들을 한 번에 되돌릴 수 있습니다. 설정을 변경하기 전에는 반드시 현재 작업 중인 변경 사항을 별도 브랜치나 스태시로 보관하세요.
+
 ## 게시글 투표 사용법
 1. **투표 활성화 게시글 작성**  
    게시글 생성 시 `voteEnabled`를 `true`로 두고 최소 2개 이상의 `voteItems` 배열을 전달합니다.

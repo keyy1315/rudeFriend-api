@@ -70,7 +70,7 @@ commit_message_rule = """
 """
 
 pull_request_rule = """
-모든 커밋 메시지는 다음 규칙을 반드시 따른다:
+모든 PUll Request 작성 시 다음 규칙을 반드시 따른다:
 
 1. 제목(Subject)
 - 반드시 대괄호 Prefix로 시작한다. 예: [API], [FIX], [FEAT], [REFACTOR], [TEST], [INFRA] 등

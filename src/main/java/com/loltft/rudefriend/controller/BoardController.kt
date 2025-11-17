@@ -10,6 +10,7 @@ import com.loltft.rudefriend.dto.vote.VoteRequest
 import com.loltft.rudefriend.dto.vote.VoteResultResponse
 import com.loltft.rudefriend.entity.enums.Role
 import com.loltft.rudefriend.service.BoardService
+import com.loltft.rudefriend.utils.ClientIpResolver
 import com.loltft.rudefriend.utils.SwaggerBody
 import com.loltft.rudefriend.utils.ValidationGroup
 import io.swagger.v3.oas.annotations.Operation
@@ -18,6 +19,7 @@ import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Encoding
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.tags.Tag
+import jakarta.servlet.http.HttpServletRequest
 import jakarta.validation.Valid
 import jakarta.validation.constraints.Min
 import org.springframework.format.annotation.DateTimeFormat
@@ -38,7 +40,10 @@ import java.util.*
 @Validated
 @RequestMapping("/api/board")
 @PreAuthorize("isAuthenticated() or hasRole('ANONYMOUS')")
-class BoardController(private val boardService: BoardService) {
+class BoardController(
+    private val boardService: BoardService,
+    private val clientIpResolver: ClientIpResolver
+) {
 
     @Operation(summary = "게시글 생성", description = "게시글을 업로드합니다.")
     @SwaggerBody(
@@ -205,11 +210,14 @@ class BoardController(private val boardService: BoardService) {
          * @return  집계된 투표 결과
          */
     fun voteBoard(
-        @PathVariable id: UUID, @RequestBody @Valid voteRequest: VoteRequest, authentication: Authentication
+        @PathVariable id: UUID,
+        @RequestBody @Valid voteRequest: VoteRequest,
+        request: HttpServletRequest,
+        authentication: Authentication
     ): ResponseEntity<ApiCommonResponse<VoteResultResponse?>?> {
         val isAnonymous = authentication.authorities?.any { it.authority == Role.ANONYMOUS.value } == true
 
-        val userInfo = authentication.name
+        val userInfo = if (isAnonymous) clientIpResolver.resolve(request) else authentication.name
 
         val result = boardService.voteOnBoard(id, voteRequest.voteItem, userInfo, isAnonymous)
         return ResponseEntity.ok(ok("투표가 반영되었습니다.", result))

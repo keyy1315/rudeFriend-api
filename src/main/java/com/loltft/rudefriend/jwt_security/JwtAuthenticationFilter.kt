@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.loltft.rudefriend.config.JwtProperties
 import com.loltft.rudefriend.dto.ApiCommonResponse.Companion.fail
 import com.loltft.rudefriend.service.CustomUserDetailService
+import com.loltft.rudefriend.utils.ClientIpResolver
 import io.jsonwebtoken.JwtException
 import jakarta.servlet.FilterChain
 import jakarta.servlet.ServletException
@@ -24,6 +25,7 @@ class JwtAuthenticationFilter(
     private val customUserDetailService: CustomUserDetailService,
     private val jwtProperties: JwtProperties,
     private val objectMapper: ObjectMapper,
+    private val clientIpResolver: ClientIpResolver,
 ) : OncePerRequestFilter() {
     private val log = LoggerFactory.getLogger(javaClass)
 
@@ -56,7 +58,7 @@ class JwtAuthenticationFilter(
                     SecurityContextHolder.getContext().authentication = authenticationToken
                 }
             } else {
-                val anonymousIpAddress = getClientIpAddress(request)
+                val anonymousIpAddress = clientIpResolver.resolve(request)
                 val anonymousUserDetails =
                     customUserDetailService.loadUserByIpAddress(anonymousIpAddress)
 
@@ -93,39 +95,5 @@ class JwtAuthenticationFilter(
         response
             .writer
             .write(objectMapper.writeValueAsString(fail<Any?>(errorMessage)))
-    }
-
-
-    private fun getClientIpAddress(request: HttpServletRequest): String {
-        // 1. X-Forwarded-For 헤더 확인 (가장 일반적)
-        var ipAddress = request.getHeader("X-Forwarded-For")
-
-        // 2. X-Forwarded-For가 없으면 다른 헤더들 확인
-        if (ipAddress.isNullOrEmpty() || "unknown".equals(ipAddress, ignoreCase = true)) {
-            ipAddress = request.getHeader("Proxy-Client-IP")
-        }
-        if (ipAddress.isNullOrEmpty() || "unknown".equals(ipAddress, ignoreCase = true)) {
-            ipAddress = request.getHeader("WL-Proxy-Client-IP")
-        }
-        if (ipAddress.isNullOrEmpty() || "unknown".equals(ipAddress, ignoreCase = true)) {
-            ipAddress = request.getHeader("HTTP_CLIENT_IP")
-        }
-        if (ipAddress.isNullOrEmpty() || "unknown".equals(ipAddress, ignoreCase = true)) {
-            ipAddress = request.getHeader("HTTP_X_FORWARDED_FOR")
-        }
-
-        // 3. 위의 모든 헤더가 없으면 remoteAddr 사용
-        if (ipAddress.isNullOrEmpty() || "unknown".equals(ipAddress, ignoreCase = true)) {
-            ipAddress = request.remoteAddr
-        }
-
-        // 4. X-Forwarded-For에 여러 IP가 있는 경우 (쉼표로 구분)
-        // 형식: client, proxy1, proxy2
-        // 첫 번째가 실제 클라이언트 IP
-        if (ipAddress != null && ipAddress.contains(",")) {
-            ipAddress = ipAddress.split(",")[0].trim()
-        }
-
-        return ipAddress ?: "unknown"
     }
 }

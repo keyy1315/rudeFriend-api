@@ -6,11 +6,26 @@ end_of_line = lf
 insert_final_newline = true
 trim_trailing_whitespace = true
 
-[*.kt]
-indent_size = 4
+# IntelliJ가 명확히 인식하도록 추가
+ij_visual_guides = 120
+ij_continuation_indent_size = 4
+
+[*.{kt,kts}]
 indent_style = space
-max_line_length = 120
-tab_width = 4
+indent_size = 4
+continuation_indent_size = 4
+# Kotlin 파일에 명시적으로 lf 지정
+end_of_line = lf
+
+[*.{gradle,gradle.kts}]
+indent_style = space
+indent_size = 4
+end_of_line = lf
+
+[*.{yml,yaml,json}]
+indent_style = space
+indent_size = 2
+end_of_line = lf
 
 # KDoc/JavaDoc 관련 설정
 ij_kotlin_align_multiline_parameters_in_calls = true
@@ -38,9 +53,3 @@ ktlint_standard_trailing-comma-on-declaration-site = disabled
 ktlint_kdoc_standard_kdoc-tag-order = enabled
 ktlint_kdoc_standard_kdoc-blank-line-before-tag = enabled
 ktlint_kdoc_standard_kdoc-no-blank-line-before-tag = disabled
-
-[*.{kt,kts}]
-ij_kotlin_code_style_defaults = KOTLIN_OFFICIAL
-
-[*.gradle.kts]
-indent_size = 4

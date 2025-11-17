@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
 import java.util.UUID
 
-interface VoteRepository : JpaRepository<Vote, UUID> {
+interface VoteRepository : JpaRepository<Vote, UUID>, VoteRepositoryCustom {
     /**
      * 회원과 게시글로 이미 존재하는 투표 기록을 조회한다.
      */

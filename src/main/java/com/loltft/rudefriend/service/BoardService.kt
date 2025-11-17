@@ -12,7 +12,6 @@ import com.loltft.rudefriend.entity.VoteSummary
 import com.loltft.rudefriend.entity.VoteSummaryId
 import com.loltft.rudefriend.repository.board.BoardRepository
 import com.loltft.rudefriend.repository.vote.VoteRepository
-import com.loltft.rudefriend.repository.vote.VoteSummaryRepository
 import com.loltft.rudefriend.utils.ConvertDateToDateTime
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.security.crypto.password.PasswordEncoder
@@ -27,7 +26,6 @@ import java.util.*
 class BoardService(
     private val boardRepository: BoardRepository,
     private val voteRepository: VoteRepository,
-    private val voteSummaryRepository: VoteSummaryRepository,
     private val passwordEncoder: PasswordEncoder,
     private val fileService: SaveFileService,
     private val memberService: MemberService
@@ -344,7 +342,7 @@ class BoardService(
         seedFromExistingVotes: Boolean = false
     ) {
         if (!board.voteEnabled || board.voteItems.isEmpty()) {
-            voteSummaryRepository.deleteAllByBoardId(board.id)
+            voteRepository.deleteAllSummariesByBoardId(board.id)
             return
         }
 
@@ -355,7 +353,7 @@ class BoardService(
             emptyMap()
         }
 
-        voteSummaryRepository.deleteAllByBoardId(board.id)
+        voteRepository.deleteAllSummariesByBoardId(board.id)
         val summaries = board.voteItems.map { item ->
             VoteSummary(
                 id = VoteSummaryId(board.id, item),
@@ -363,7 +361,7 @@ class BoardService(
             )
         }
         if (summaries.isNotEmpty()) {
-            voteSummaryRepository.saveAll(summaries)
+            voteRepository.saveAllVoteSummaries(summaries)
         }
     }
 
@@ -380,7 +378,7 @@ class BoardService(
         wasVoteEnabled: Boolean
     ) {
         if (!board.voteEnabled) {
-            voteSummaryRepository.deleteAllByBoardId(board.id)
+            voteRepository.deleteAllSummariesByBoardId(board.id)
             return
         }
 
@@ -391,16 +389,16 @@ class BoardService(
 
         val removed = previousVoteItems.filterNot { board.voteItems.contains(it) }
         if (removed.isNotEmpty()) {
-            voteSummaryRepository.deleteAllByBoardIdAndVoteItemIn(board.id, removed)
+            voteRepository.deleteSummariesByBoardIdAndVoteItemIn(board.id, removed)
         }
 
-        val existingItems = voteSummaryRepository.findAllByIdBoardId(board.id)
+        val existingItems = voteRepository.findAllSummariesByBoardId(board.id)
             .map { it.id.voteItem }
             .toSet()
         val newItems = board.voteItems.filterNot { existingItems.contains(it) }
         if (newItems.isNotEmpty()) {
             val summaries = newItems.map { VoteSummary(VoteSummaryId(board.id, it), 0L) }
-            voteSummaryRepository.saveAll(summaries)
+            voteRepository.saveAllVoteSummaries(summaries)
         }
     }
 
@@ -412,12 +410,12 @@ class BoardService(
      * @param delta    증분 값(양수/음수)
      */
     private fun applyVoteDelta(boardId: UUID, voteItem: String, delta: Long) {
-        val updated = voteSummaryRepository.applyDelta(boardId, voteItem, delta)
+        val updated = voteRepository.applySummaryDelta(boardId, voteItem, delta)
         if (updated == 0L) {
             require(delta >= 0) {
                 "투표 집계 정보가 존재하지 않아 음수 증분을 적용할 수 없습니다."
             }
-            voteSummaryRepository.save(
+            voteRepository.saveVoteSummary(
                 VoteSummary(
                     id = VoteSummaryId(boardId, voteItem),
                     voteCount = delta
@@ -448,11 +446,11 @@ class BoardService(
      * @return 항목명과 누적 득표수를 매핑한 결과
      */
     private fun buildVoteSummary(board: Board, boardId: UUID): Map<String, Long> {
-        var summaries = voteSummaryRepository.findAllByIdBoardId(boardId)
+        var summaries = voteRepository.findAllSummariesByBoardId(boardId)
 
         if (summaries.isEmpty() && board.voteEnabled && board.voteItems.isNotEmpty()) {
             initializeVoteSummaries(board, seedFromExistingVotes = true)
-            summaries = voteSummaryRepository.findAllByIdBoardId(boardId)
+            summaries = voteRepository.findAllSummariesByBoardId(boardId)
         }
 
         val counts = summaries

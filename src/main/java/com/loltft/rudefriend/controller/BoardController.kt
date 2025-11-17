@@ -6,8 +6,11 @@ import com.loltft.rudefriend.dto.board.BoardRequest
 import com.loltft.rudefriend.dto.board.BoardResponse
 import com.loltft.rudefriend.dto.enums.DateOption
 import com.loltft.rudefriend.dto.enums.GameType
+import com.loltft.rudefriend.dto.vote.VoteRequest
+import com.loltft.rudefriend.dto.vote.VoteResultResponse
 import com.loltft.rudefriend.entity.enums.Role
 import com.loltft.rudefriend.service.BoardService
+import com.loltft.rudefriend.utils.ClientIpResolver
 import com.loltft.rudefriend.utils.SwaggerBody
 import com.loltft.rudefriend.utils.ValidationGroup
 import io.swagger.v3.oas.annotations.Operation
@@ -16,6 +19,8 @@ import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Encoding
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.tags.Tag
+import jakarta.servlet.http.HttpServletRequest
+import jakarta.validation.Valid
 import jakarta.validation.constraints.Min
 import org.springframework.format.annotation.DateTimeFormat
 import org.springframework.http.MediaType
@@ -35,7 +40,10 @@ import java.util.*
 @Validated
 @RequestMapping("/api/board")
 @PreAuthorize("isAuthenticated() or hasRole('ANONYMOUS')")
-class BoardController(private val boardService: BoardService) {
+class BoardController(
+    private val boardService: BoardService,
+    private val clientIpResolver: ClientIpResolver
+) {
 
     @Operation(summary = "게시글 생성", description = "게시글을 업로드합니다.")
     @SwaggerBody(
@@ -65,8 +73,7 @@ class BoardController(private val boardService: BoardService) {
         ) @RequestPart(value = "boardDto") @Validated(ValidationGroup.CREATE::class) boardRequest: BoardRequest,
         authentication: Authentication
     ): ResponseEntity<ApiCommonResponse<BoardResponse?>?> {
-        val isAnonymous =
-            authentication.authorities?.any { it.authority == Role.ANONYMOUS.value } == true
+        val isAnonymous = authentication.authorities?.any { it.authority == Role.ANONYMOUS.value } == true
 
         require(!(isAnonymous && boardRequest.password.isNullOrBlank())) {
             "익명 사용자는 비밀번호를 반드시 입력해야 합니다."
@@ -78,7 +85,7 @@ class BoardController(private val boardService: BoardService) {
         } ?: throw AccessDeniedException("작성자 정보를 찾을 수 없습니다.")
 
         val boardResponse = boardService.createBoard(
-            files ?: emptyList(), boardRequest, createdBy
+            files ?: emptyList(), boardRequest, createdBy, isAnonymous
         )
         return ResponseEntity.ok(ok("게시글 작성 성공", boardResponse))
     }
@@ -101,11 +108,9 @@ class BoardController(private val boardService: BoardService) {
          * @return 수정 결과 응답 본문
          */
     fun updateBoard(
-        @PathVariable id: UUID,
-        @Parameter(
+        @PathVariable id: UUID, @Parameter(
             description = "게시글 이미지/동영상", required = false
-        ) @RequestPart(value = "files", required = false) files: MutableList<MultipartFile>?,
-        @Parameter(
+        ) @RequestPart(value = "files", required = false) files: MutableList<MultipartFile>?, @Parameter(
             description = "게시글 수정 DTO",
             required = true,
             content = [Content(mediaType = MediaType.APPLICATION_JSON_VALUE)]
@@ -143,8 +148,7 @@ class BoardController(private val boardService: BoardService) {
          * @return 삭제 성공 응답
          */
     fun deleteBoard(
-        @PathVariable id: UUID,
-        authentication: Authentication
+        @PathVariable id: UUID, authentication: Authentication
     ): ResponseEntity<ApiCommonResponse<Boolean?>?> {
         boardService.deleteBoard(id, authentication.name)
         return ResponseEntity.ok(ok("게시글 삭제 성공"))
@@ -189,16 +193,33 @@ class BoardController(private val boardService: BoardService) {
         @RequestParam(defaultValue = "1") @Schema(description = "현재 페이지") pageNo: @Min(1) Int
     ): ResponseEntity<ApiCommonResponse<List<BoardResponse?>?>?> {
         val (boards, total) = boardService.getBoards(
-            dateFrom,
-            dateTo,
-            dateOption,
-            search,
-            gameType,
-            pageNo,
-            tags,
-            author
+            dateFrom, dateTo, dateOption, search, gameType, pageNo, tags, author
         )
 
         return ResponseEntity.ok(ok("게시글 목록 조회 성공", boards, total))
+    }
+
+    @Operation(summary = "게시글 투표", description = "투표 시스템이 활성화된 게시글에 투표합니다.")
+    @PostMapping("/{id}/vote")
+        /**
+         * 게시글 투표 요청을 처리한다.
+         *
+         * @param id            투표 대상 게시글 ID
+         * @param voteRequest   사용자가 제출한 투표 항목
+         * @param authentication 사용자 인증 정보(익명 여부 및 식별)
+         * @return  집계된 투표 결과
+         */
+    fun voteBoard(
+        @PathVariable id: UUID,
+        @RequestBody @Valid voteRequest: VoteRequest,
+        request: HttpServletRequest,
+        authentication: Authentication
+    ): ResponseEntity<ApiCommonResponse<VoteResultResponse?>?> {
+        val isAnonymous = authentication.authorities?.any { it.authority == Role.ANONYMOUS.value } == true
+
+        val userInfo = if (isAnonymous) clientIpResolver.resolve(request) else authentication.name
+
+        val result = boardService.voteOnBoard(id, voteRequest.voteItem, userInfo, isAnonymous)
+        return ResponseEntity.ok(ok("투표가 반영되었습니다.", result))
     }
 }

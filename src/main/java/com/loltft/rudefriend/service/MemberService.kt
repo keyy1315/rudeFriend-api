@@ -16,6 +16,7 @@ import com.loltft.rudefriend.utils.ConvertDateToDateTime
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException
 import org.springframework.security.core.userdetails.UserDetails
+import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -40,7 +41,7 @@ class MemberService(
      */
     fun findByRefreshToken(refreshToken: String?): Member? {
         return memberRepository.findByRefreshToken(refreshToken)
-            ?.orElseThrow(Supplier { NoSuchElementException("존재하지 않는 회원 정보") })
+            .orElseThrow(Supplier { NoSuchElementException("존재하지 않는 회원 정보") })
     }
 
     /**
@@ -221,6 +222,14 @@ class MemberService(
                 it
             )
         }
+    }
+
+    /**
+     * 회원 아이디로 Member 객체 조회
+     */
+    fun findByMemberId(memberUsername: String): Member? {
+        return memberRepository.findByMemberId(memberUsername)
+            .orElseThrow { UsernameNotFoundException("존재하지 않는 회원 ID : $memberUsername") }
     }
 
     companion object {
